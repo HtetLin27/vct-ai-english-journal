@@ -402,15 +402,22 @@ CREATE TABLE public.writing_streaks (
 
 **Streak logic (enforced in application code, not the database):**
 
+This table holds two distinct kinds of data, and the API route treats them differently when a new entry is saved:
+
+- **Totals** (`total_words`, `total_entries`) — a historical record. Every saved entry counts, no matter what its `entry_date` is. A backfilled entry from last week is still a real entry the user wrote and must be reflected in the totals.
+- **Streak fields** (`current_streak`, `longest_streak`, `last_entry_date`) — a measure of writing momentum, i.e. consecutive days the user actually showed up to write. Only entries whose `entry_date` equals **today (UTC)** count as showing up today. Backfilled entries (`entry_date` in the past) do **not** touch these fields. This means a user can fill in a missed day later without it resetting their current streak — and equally, a backfill cannot retroactively extend a streak the user did not actually maintain.
+
 When a journal entry is saved, the API route:
+
 1. Fetches the user's current `writing_streaks` row.
-2. If `last_entry_date` is yesterday → increment `current_streak` by 1.
-3. If `last_entry_date` is today → no streak change (entry already counted today).
-4. If `last_entry_date` is older than yesterday → reset `current_streak` to 1.
-5. Update `longest_streak` if `current_streak` now exceeds it.
-6. Add the new entry's `word_count` to `total_words`.
-7. Increment `total_entries` by 1.
-8. Set `last_entry_date` to today.
+2. **Always** adds the new entry's `word_count` to `total_words` and increments `total_entries` by 1.
+3. Then checks whether `entry_date == today (UTC)`. If **not**, stop here — the streak fields are left untouched.
+4. If `entry_date == today`, apply the streak transition based on `last_entry_date`:
+   - `last_entry_date` is today → no change (entry already counted today).
+   - `last_entry_date` is yesterday → increment `current_streak` by 1.
+   - `last_entry_date` is anything else (older, null, or — in theory — in the future) → reset `current_streak` to 1.
+5. Update `longest_streak = max(longest_streak, current_streak)`.
+6. Set `last_entry_date` to today.
 
 ### Indexes
 
