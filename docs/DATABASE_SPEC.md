@@ -12,6 +12,7 @@
 8. [Table: writing_streaks](#8-table-writing_streaks)
 9. [Signup Trigger](#9-signup-trigger)
 10. [Full Execution Script](#10-full-execution-script)
+11. [Security Hardening](#11-security-hardening)
 
 ---
 
@@ -709,4 +710,37 @@ CREATE TRIGGER on_auth_user_created
   AFTER INSERT ON auth.users
   FOR EACH ROW
   EXECUTE FUNCTION public.handle_new_user();
+
+
+-- ============================================================
+-- STEP 8: Security hardening (see Section 11 for rationale)
+-- ============================================================
+
+ALTER FUNCTION public.set_updated_at() SET search_path = public, pg_temp;
+
+REVOKE EXECUTE ON FUNCTION public.handle_new_user() FROM PUBLIC, anon, authenticated;
 ```
+
+---
+
+## 11. Security Hardening
+
+These statements are applied at the end of Section 10. They close two warnings flagged by `supabase db advisors` after the initial schema is created. They are part of the standard setup — a fresh database should always include them.
+
+### 11.1 Pin `set_updated_at` search_path
+
+```sql
+ALTER FUNCTION public.set_updated_at() SET search_path = public, pg_temp;
+```
+
+**Why:** Without an explicit `search_path`, the function resolves unqualified names using the caller's `search_path` at execution time. A user (or role) with `CREATE` privilege on any schema earlier in the `search_path` could shadow built-in objects and hijack what the function does when it fires from a trigger. Pinning `search_path` to `public, pg_temp` eliminates that attack surface.
+
+### 11.2 Revoke public EXECUTE on `handle_new_user`
+
+```sql
+REVOKE EXECUTE ON FUNCTION public.handle_new_user() FROM PUBLIC, anon, authenticated;
+```
+
+**Why:** `handle_new_user` is a `SECURITY DEFINER` function in the `public` schema. Postgres grants `EXECUTE` to `PUBLIC` by default for every new function, which means Supabase auto-exposes it as an RPC endpoint at `/rest/v1/rpc/handle_new_user`, callable by both `anon` and `authenticated`. Without this revoke, any user could invoke it directly and insert stray rows into `profiles` and `writing_streaks` using their own `auth.uid()`.
+
+The `AFTER INSERT` trigger on `auth.users` still fires correctly after the revoke — Postgres triggers invoke their function regardless of `EXECUTE` grants on the role.
