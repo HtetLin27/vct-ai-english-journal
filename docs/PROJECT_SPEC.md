@@ -90,17 +90,26 @@ The AI acts as a friendly English teacher. All AI interactions are scoped to the
 
 ## 4. Tech Stack
 
-| Layer              | Technology                             |
-| ------------------ | -------------------------------------- |
-| Frontend framework | Next.js 14 (App Router)                |
-| Styling            | Tailwind CSS                           |
-| UI components      | shadcn/ui                              |
-| Backend            | Next.js API Routes (same repo)         |
-| Database           | PostgreSQL via Supabase                |
-| Authentication     | Supabase Auth (email + password)       |
-| AI                 | Google Gemini API (`gemini-2.5-flash`) |
-| Deployment         | Vercel                                 |
-| Version control    | GitHub                                 |
+| Layer              | Technology                                                       |
+| ------------------ | ---------------------------------------------------------------- |
+| Frontend framework | Next.js `14.2.35` (App Router)                                   |
+| Styling            | Tailwind CSS v3                                                  |
+| UI components      | shadcn/ui v2.1.0 (style `new-york`, base color `zinc`)           |
+| Backend            | Next.js API Routes (same repo)                                   |
+| Database           | PostgreSQL via Supabase                                          |
+| Authentication     | Supabase Auth (email + password)                                 |
+| AI                 | Google Gemini API (`gemini-2.5-flash`)                           |
+| Deployment         | Vercel                                                           |
+| Version control    | GitHub                                                           |
+
+### 4.1 Toolchain Notes
+
+These are **intentional compatibility choices** made during project setup. Do not "fix" them in future sessions — they are pinned together for a reason.
+
+- **Tailwind v3, not v4.** shadcn/ui v2.x is built against Tailwind v3 (`@tailwind base/components/utilities` directives, classic `tailwind.config.ts`). The current `shadcn@latest` CLI requires Tailwind v4 and is incompatible with this setup. Stay on shadcn `2.x` and Tailwind v3 unless the whole stack is migrated together.
+- **shadcn/ui v2.1.0 with brand-green overrides.** Initialized with `style: new-york`, `baseColor: zinc`, CSS variables enabled. The default `--primary` and `--ring` in `app/globals.css` are overridden to the brand green from `UI_SPEC.md` — `oklch(0.627 0.194 149.214)` (≈ `green-600`) for light, `oklch(0.696 0.198 149.521)` (≈ `green-500`) for dark. `--primary-foreground` is white for legible button labels. Keep these overrides in place; do not revert to zinc.
+- **`next.config.mjs`, not `.ts`.** TypeScript Next config (`next.config.ts`) requires Next.js 15+. We are on Next 14, so config stays as `.mjs`.
+- **No `public/` folder yet.** Next 14's `create-next-app` does not generate one by default. Create it the first time a static asset (favicon, image, etc.) needs to be added; its absence is not a missing-file bug.
 
 ---
 
@@ -492,6 +501,7 @@ ai-english-journal/
 - Verify production build works
 - Test authentication, journal CRUD, and AI features in production
 - Set up Supabase production database (if using a separate project)
+- **Re-enable email confirmation in Supabase Auth settings before going live** (see `specs/CHANGELOG.md` 2026-06-20 — the toggle was turned off for local dev). Path: Supabase Dashboard → Authentication → Providers → Email → Confirm email.
 
 **Deliverable:** App is live on a public Vercel URL.
 
