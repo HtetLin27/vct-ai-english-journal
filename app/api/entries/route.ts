@@ -138,7 +138,7 @@ export async function POST(request: NextRequest) {
   // MOMENTUM — consecutive days the user actually showed up to write. Only
   // entries written for *today* reflect that momentum, so backfills to past
   // dates do not touch these fields and do not reset the streak.
-  const { data: streak } = await supabase
+  const { data: streak, error: streakSelectError } = await supabase
     .from("writing_streaks")
     .select(
       "current_streak, longest_streak, last_entry_date, total_words, total_entries"
@@ -146,7 +146,12 @@ export async function POST(request: NextRequest) {
     .eq("user_id", user.id)
     .single()
 
-  if (streak) {
+  if (streakSelectError) {
+    console.error(
+      "[entries.POST] writing_streaks SELECT failed",
+      { userId: user.id, error: streakSelectError.message }
+    )
+  } else if (streak) {
     const today = new Date().toISOString().slice(0, 10)
     const update: Record<string, unknown> = {
       total_words: streak.total_words + word_count,
@@ -168,10 +173,22 @@ export async function POST(request: NextRequest) {
       update.last_entry_date = today
     }
 
-    await supabase
+    const { data: updatedRows, error: streakUpdateError } = await supabase
       .from("writing_streaks")
       .update(update)
       .eq("user_id", user.id)
+      .select("user_id")
+
+    if (streakUpdateError || !updatedRows || updatedRows.length === 0) {
+      console.error(
+        "[entries.POST] writing_streaks UPDATE failed",
+        {
+          userId: user.id,
+          error: streakUpdateError?.message,
+          rowsAffected: updatedRows?.length ?? 0,
+        }
+      )
+    }
   }
 
   return jsonSuccess(entry, 201)

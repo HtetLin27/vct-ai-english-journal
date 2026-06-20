@@ -443,8 +443,18 @@ CREATE POLICY "Users can view own writing streak"
   FOR SELECT
   USING (auth.uid() = user_id);
 
--- UPDATE is performed server-side via the service role key (bypasses RLS).
--- No client-facing UPDATE policy is needed or safe to expose.
+-- A user can update their own streak row. The API route
+-- (POST /api/entries) runs under the user's session via the anon-key
+-- server client, so RLS applies — without this policy the increment
+-- to total_words / total_entries silently affects zero rows.
+-- INSERT is intentionally not exposed: the row is created by the
+-- on_auth_user_created trigger (SECURITY DEFINER) and there is exactly
+-- one row per user for its lifetime.
+CREATE POLICY "Users can update own writing streak"
+  ON public.writing_streaks
+  FOR UPDATE
+  USING (auth.uid() = user_id)
+  WITH CHECK (auth.uid() = user_id);
 ```
 
 ---
@@ -685,6 +695,11 @@ ALTER TABLE public.writing_streaks ENABLE ROW LEVEL SECURITY;
 CREATE POLICY "Users can view own writing streak"
   ON public.writing_streaks FOR SELECT
   USING (auth.uid() = user_id);
+
+CREATE POLICY "Users can update own writing streak"
+  ON public.writing_streaks FOR UPDATE
+  USING (auth.uid() = user_id)
+  WITH CHECK (auth.uid() = user_id);
 
 CREATE TRIGGER writing_streaks_set_updated_at
   BEFORE UPDATE ON public.writing_streaks
