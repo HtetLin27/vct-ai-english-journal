@@ -42,16 +42,24 @@ export async function middleware(request: NextRequest) {
   if (isProtected && !user) {
     const url = request.nextUrl.clone()
     url.pathname = "/login"
-    return NextResponse.redirect(url)
+    return redirectWithCookies(url, response)
   }
 
   if (isAuthRoute && user) {
     const url = request.nextUrl.clone()
     url.pathname = "/dashboard"
-    return NextResponse.redirect(url)
+    return redirectWithCookies(url, response)
   }
 
   return response
+}
+
+function redirectWithCookies(url: URL, source: NextResponse) {
+  const redirect = NextResponse.redirect(url)
+  source.cookies.getAll().forEach((cookie) => {
+    redirect.cookies.set(cookie)
+  })
+  return redirect
 }
 
 export const config = {
