@@ -514,8 +514,8 @@ ai-english-journal/
 | Phase 1  | Project Setup      | Complete    |
 | Phase 2  | Authentication     | Complete    |
 | Phase 3  | Journal CRUD       | Complete    |
-| Phase 4  | Search & Filtering | In Progress |
-| Phase 5  | AI English Teacher | Not Started |
+| Phase 4  | Search & Filtering | Complete    |
+| Phase 5  | AI English Teacher | In Progress |
 | Phase 6  | Vocabulary Book    | Not Started |
 | Phase 7  | Progress Tracking  | Not Started |
 | Phase 8  | Settings           | Not Started |
