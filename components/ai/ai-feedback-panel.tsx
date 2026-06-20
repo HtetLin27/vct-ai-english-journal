@@ -10,6 +10,7 @@ interface Correction {
   original: string
   corrected: string
   explanation: string
+  explanation_my?: string
 }
 
 interface Suggestion {
@@ -17,7 +18,9 @@ interface Suggestion {
   original: string
   suggestion: string
   reason: string
+  reason_my?: string
   definition: string
+  definition_my?: string
   example_sentence: string
 }
 
@@ -47,6 +50,12 @@ export function AiFeedbackPanel({ entryId }: Props) {
         body: JSON.stringify({
           word: suggestion.suggestion,
           definition: suggestion.definition,
+          // Forward only when the suggestion carries it — older feedback rows
+          // (and any future suggestion source without a Myanmar definition)
+          // simply omit the field, matching the optional API contract.
+          ...(suggestion.definition_my
+            ? { definition_my: suggestion.definition_my }
+            : {}),
           example_sentence: suggestion.example_sentence,
           source_entry_id: entryId,
         }),
@@ -187,6 +196,7 @@ export function AiFeedbackPanel({ entryId }: Props) {
                     original={c.original}
                     corrected={c.corrected}
                     explanation={c.explanation}
+                    explanationMy={c.explanation_my}
                   />
                 ))}
               </div>
@@ -211,6 +221,7 @@ export function AiFeedbackPanel({ entryId }: Props) {
                   original={s.original}
                   suggestion={s.suggestion}
                   reason={s.reason}
+                  reasonMy={s.reason_my}
                   definition={s.definition}
                   example_sentence={s.example_sentence}
                   onSave={() => handleSaveWord(s)}

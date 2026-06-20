@@ -262,34 +262,39 @@ CREATE TABLE public.ai_feedback (
 
 **JSONB shapes:**
 
-`corrections` — array of grammar corrections:
+`corrections` — array of grammar corrections. Every item carries the explanation in **both English and Myanmar** — Myanmar text helps users who are still building English fluency understand the rule without context-switching to a translator:
 ```json
 [
   {
-    "original":    "I goed to the market",
-    "corrected":   "I went to the market",
-    "explanation": "'Go' is an irregular verb. The past tense is 'went', not 'goed'."
+    "original":       "I goed to the market",
+    "corrected":      "I went to the market",
+    "explanation":    "'Go' is an irregular verb. The past tense is 'went', not 'goed'.",
+    "explanation_my": "'Go' က irregular verb ဖြစ်ပါတယ်။ past tense မှာ 'goed' မဟုတ်ဘဲ 'went' ကိုသုံးရပါမယ်။"
   }
 ]
 ```
 
-`suggestions` — array of vocabulary and expression suggestions:
+`suggestions` — array of vocabulary and expression suggestions. The English `reason` and Myanmar `reason_my` are paired — the model writes both in the same response:
 ```json
 [
   {
     "type":       "vocabulary",
     "original":   "very happy",
     "suggestion": "delighted",
-    "reason":     "'Delighted' sounds more natural and expressive than 'very happy'."
+    "reason":     "'Delighted' sounds more natural and expressive than 'very happy'.",
+    "reason_my":  "'Delighted' က 'very happy' ထက် ပိုသဘာဝကျပြီး ပိုပြောရှင်းပါတယ်။"
   },
   {
     "type":       "expression",
     "original":   "I like it very much",
     "suggestion": "I really enjoy it",
-    "reason":     "'I really enjoy it' is a more natural English expression."
+    "reason":     "'I really enjoy it' is a more natural English expression.",
+    "reason_my":  "'I really enjoy it' က ပိုသဘာဝကျတဲ့ အင်္ဂလိပ်အသုံးအနှုန်းပါ။"
   }
 ]
 ```
+
+**Backward compatibility.** The Myanmar fields are part of the JSONB blob, not separate columns, so no schema migration is required for them — older `ai_feedback` rows written before this change simply omit `explanation_my` / `reason_my`. UI components must treat the Myanmar fields as optional and gracefully render English-only when they're missing.
 
 No `updated_at` column — records are immutable.
 
@@ -342,6 +347,7 @@ CREATE TABLE public.saved_words (
   user_id          uuid        NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
   word             text        NOT NULL,
   definition       text,
+  definition_my    text,
   example_sentence text,
   source_entry_id  uuid        REFERENCES public.journal_entries(id) ON DELETE SET NULL,
   created_at       timestamptz NOT NULL DEFAULT now(),
@@ -353,6 +359,7 @@ CREATE TABLE public.saved_words (
 
 **Notes:**
 - `definition` and `example_sentence` are populated by the AI at save time and stored for offline viewing.
+- `definition_my` holds the Myanmar translation of `definition` and is populated from the same AI suggestion the user saved from. It is **nullable** so that future non-AI-sourced word entries (e.g. a manual "Add a word" flow) can omit it without a backfill.
 - `source_entry_id` is set to `NULL` if the source entry is deleted — the word itself is preserved.
 - The `UNIQUE (user_id, word)` constraint prevents duplicate vocabulary entries per user.
 
@@ -679,6 +686,7 @@ CREATE TABLE public.saved_words (
   user_id          uuid        NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
   word             text        NOT NULL,
   definition       text,
+  definition_my    text,
   example_sentence text,
   source_entry_id  uuid        REFERENCES public.journal_entries(id) ON DELETE SET NULL,
   created_at       timestamptz NOT NULL DEFAULT now(),

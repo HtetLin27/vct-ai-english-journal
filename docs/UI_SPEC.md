@@ -735,17 +735,20 @@ See full specification in Section 7.
 
 ### `CorrectionCard`
 
-**What it does:** Displays a single grammar correction with the original error, corrected version, and simple explanation.
+**What it does:** Displays a single grammar correction with the original error, corrected version, and a bilingual (English + Myanmar) explanation.
 
 **Props:**
 
 ```ts
 {
-  original:    string
-  corrected:   string
-  explanation: string
+  original:        string
+  corrected:       string
+  explanation:     string
+  explanation_my?: string   // optional — older feedback rows don't have it
 }
 ```
+
+**Bilingual layout.** The English explanation is shown first (the primary line — these users are learning English). The Myanmar explanation sits directly below it, visually subordinate so the eye reaches for English first. When `explanation_my` is absent (legacy feedback), the Myanmar line is omitted entirely — no placeholder, no "translation unavailable" copy.
 
 **Visual design:** See Section 7.2.
 
@@ -755,7 +758,7 @@ See full specification in Section 7.
 
 ### `SuggestionCard`
 
-**What it does:** Displays a vocabulary or expression suggestion with a "Save word" button for vocabulary type.
+**What it does:** Displays a vocabulary or expression suggestion with a "Save word" button for vocabulary type. The reason is shown in both English and Myanmar.
 
 **Props:**
 
@@ -765,11 +768,14 @@ See full specification in Section 7.
   original:         string
   suggestion:       string
   reason:           string
+  reason_my?:       string   // optional — older feedback rows don't have it
   definition:       string
   example_sentence: string
   onSave?:          () => Promise<"saved" | "error">  // only used for vocabulary type
 }
 ```
+
+**Bilingual layout.** The `reason` line gets the same treatment as `CorrectionCard.explanation`: English first, Myanmar directly below in a softer style. If `reason_my` is missing, render English only with no placeholder. The `definition` shown inside the card stays English-only here — the Myanmar definition (`definition_my`) is captured server-side from the same suggestion when the user clicks "Save word" and surfaces later in `WordCard`.
 
 The parent (`AiFeedbackPanel`) closes over the full suggestion when wiring `onSave`, so the card itself doesn't need `entry_id` or the suggestion object as arguments. The card uses the returned `"saved" | "error"` to drive its own button state (`idle → saving → saved | error`); the `400 "already in your vocabulary book"` case is treated as `"saved"` by the parent.
 
@@ -779,7 +785,7 @@ The parent (`AiFeedbackPanel`) closes over the full suggestion when wiring `onSa
 
 ### `WordCard`
 
-**What it does:** Displays a saved vocabulary word with definition, example sentence, and a delete button.
+**What it does:** Displays a saved vocabulary word with a bilingual definition, example sentence, and a delete button.
 
 **Props:**
 
@@ -788,6 +794,7 @@ The parent (`AiFeedbackPanel`) closes over the full suggestion when wiring `onSa
   id:               string
   word:             string
   definition:       string
+  definition_my?:   string   // optional — older saved words and any future non-AI-sourced words may not have it
   example_sentence: string
   onDelete:         (id: string) => void
 }
@@ -796,10 +803,13 @@ The parent (`AiFeedbackPanel`) closes over the full suggestion when wiring `onSa
 **Visual design:**
 - White card, `rounded-xl border border-gray-200 shadow-sm p-4`
 - Word: `text-lg font-semibold text-gray-900`
-- Definition: `text-sm text-gray-600`
+- English definition: `text-sm text-gray-600`
+- Myanmar definition (when present): `text-sm text-gray-500` on the line directly under the English definition, with `mt-0.5` for a tight pair. No icon, no label prefix — the script change is enough to signal language.
 - Horizontal divider
 - Example sentence in italics: `text-sm text-gray-500 italic`
 - Delete button: small icon button (Lucide `Trash2`, `text-red-400 hover:text-red-600`) pinned to bottom-right
+
+When `definition_my` is missing, render the English definition alone — the divider and example sentence flow up naturally with no gap.
 
 **Where used:** Vocabulary page.
 
@@ -1005,6 +1015,9 @@ Background: `bg-green-50`, border: `border border-green-200 rounded-xl`.
 │  │                                            │  │
 │  │ 💡 After "were", we use past tense verbs. │  │
 │  │    "Help" should be "helped".              │  │
+│  │    "were" နောက်မှာ past tense verb         │  │
+│  │    ကိုသုံးပါ။ "Help" က "helped"            │  │
+│  │    ဖြစ်ရပါမယ်။                              │  │
 │  └────────────────────────────────────────────┘  │
 │                                                  │
 │  Vocabulary Suggestions  (1 found)               │
@@ -1013,6 +1026,8 @@ Background: `bg-green-50`, border: `border border-green-200 rounded-xl`.
 │  │  very friendly  →  welcoming               │  │
 │  │  💬 "Welcoming" sounds more natural and    │  │
 │  │     expresses the same idea more precisely.│  │
+│  │     "Welcoming" က ပိုသဘာဝကျပြီး အဓိပ္ပါယ်  │  │
+│  │     ကို ပိုတိကျစွာဖော်ပြပါတယ်။              │  │
 │  │                      [ + Save "welcoming" ]│  │
 │  └────────────────────────────────────────────┘  │
 │                                                  │
@@ -1032,16 +1047,26 @@ Background: `bg-green-50`, border: `border border-green-200 rounded-xl`.
 │  Corrected (green, slightly indented with → prefix):     │
 │  → my colleagues were very friendly and helped me a lot. │
 │                                                          │
-│  Explanation (gray, 💡 prefix, simple English):          │
+│  Explanation (English, gray, 💡 prefix):                 │
 │  💡 After "were", we use past tense verbs.              │
 │     "Help" should be "helped".                           │
+│  Myanmar translation (softer gray, sits under English,   │
+│  no prefix — script change signals the language):        │
+│     "were" နောက်မှာ past tense verb ကိုသုံးပါ။          │
+│     "Help" က "helped" ဖြစ်ရပါမယ်။                       │
 └──────────────────────────────────────────────────────────┘
 ```
 
 - Card: `bg-white rounded-lg border border-gray-200 p-4`
 - Original text: `text-red-500 line-through text-sm`
 - Corrected text: `text-green-700 text-sm font-medium`
-- Explanation: `text-gray-500 text-sm mt-2`
+- Explanation (English): `text-gray-600 text-sm mt-2` — slightly darker than before so English remains the visual anchor
+- Explanation (Myanmar, `explanation_my`): `text-gray-500 text-sm mt-1 leading-relaxed` — tight `mt-1` keeps the bilingual pair together; `leading-relaxed` gives Myanmar script room to breathe (combining marks need a bit more vertical space than Latin)
+- When `explanation_my` is absent, the Myanmar line is omitted entirely — no fallback copy, no extra spacing.
+
+**Why English-first, Myanmar-second.** Users are here to *learn English*. Reading the English explanation first reinforces the target language; the Myanmar line is a comprehension safety net, not the primary information. Visually subordinating it (softer color, no icon) keeps the focus on English without hiding the safety net from learners who need it.
+
+**Same treatment in `SuggestionCard`.** The `reason` (💬 prefix) line uses the same English-then-Myanmar pairing with identical typography — `text-gray-600` for English, `text-gray-500 leading-relaxed mt-1` for Myanmar.
 
 ---
 

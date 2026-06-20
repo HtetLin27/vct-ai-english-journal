@@ -21,12 +21,16 @@ const MOCK_FEEDBACK = {
       corrected: "I went to the market yesterday.",
       explanation:
         "'Go' is an irregular verb. Its past tense form is 'went', not 'goed'.",
+      explanation_my:
+        "'Go' က irregular verb ဖြစ်ပါတယ်။ past tense မှာ 'goed' မဟုတ်ဘဲ 'went' ကိုသုံးရပါမယ်။",
     },
     {
       original: "She don't like coffee.",
       corrected: "She doesn't like coffee.",
       explanation:
         "With a third-person singular subject ('she'), use 'doesn't' instead of 'don't'.",
+      explanation_my:
+        "third-person singular subject ('she') နဲ့သုံးတဲ့အခါ 'don't' မဟုတ်ဘဲ 'doesn't' ကိုသုံးပါ။",
     },
   ],
   suggestions: [
@@ -36,7 +40,10 @@ const MOCK_FEEDBACK = {
       suggestion: "excellent",
       reason:
         "'Excellent' is more precise and sounds more natural in writing than 'very good'.",
+      reason_my:
+        "'Excellent' က 'very good' ထက် ပိုတိကျပြီး စာအရေးအသားမှာ ပိုသဘာဝကျပါတယ်။",
       definition: "Extremely good; outstanding in quality.",
+      definition_my: "အလွန်ကောင်းမွန်ပြီး အရည်အသွေးအလွန်ပြည့်စုံတဲ့။",
       example_sentence: "She did an excellent job on the presentation.",
     },
     {
@@ -45,7 +52,10 @@ const MOCK_FEEDBACK = {
       suggestion: "I enjoy eating food",
       reason:
         "After 'enjoy' in English we use a gerund (-ing form), and 'enjoy' is a more natural choice here.",
+      reason_my:
+        "အင်္ဂလိပ်စာမှာ 'enjoy' ပြီးရင် gerund (-ing form) ကိုသုံးရပြီး၊ ဒီနေရာမှာ 'enjoy' က ပိုသဘာဝကျပါတယ်။",
       definition: "To take pleasure in the activity of eating.",
+      definition_my: "အစားအသောက်စားခြင်းကို နှစ်သက်ပျော်ရွှင်စွာခံစားရခြင်း။",
       example_sentence: "I enjoy eating food with my family on weekends.",
     },
   ],
@@ -83,7 +93,12 @@ ${entryBody}
 Respond with ONLY a JSON object (no markdown, no code fences, no commentary) with this exact shape:
 {
   "corrections": [
-    { "original": string, "corrected": string, "explanation": string }
+    {
+      "original": string,
+      "corrected": string,
+      "explanation": string,
+      "explanation_my": string
+    }
   ],
   "suggestions": [
     {
@@ -91,25 +106,38 @@ Respond with ONLY a JSON object (no markdown, no code fences, no commentary) wit
       "original": string,
       "suggestion": string,
       "reason": string,
+      "reason_my": string,
       "definition": string,
+      "definition_my": string,
       "example_sentence": string
     }
   ]
 }
-Field meanings for each suggestion:
-- "reason": short explanation of WHY the suggested word or phrase is a better choice than the original.
-- "definition": dictionary-style meaning of the suggested word or phrase (what it means), independent of this entry.
-- "example_sentence": a natural, standalone example sentence that uses the suggested word or phrase correctly.
-Both arrays must be present (use [] if there is nothing to suggest). Every field in every suggestion must be a non-empty string.`
+Field meanings:
+- "explanation": short English explanation of the grammar rule behind the correction.
+- "explanation_my": Myanmar (Burmese) translation of that same explanation — write it in Burmese script (မြန်မာစာ), not in romanized form. Keep technical English terms like "past tense" or "verb" in English; translate only the explanatory prose around them. This helps a learner who is still building English fluency understand the rule.
+- "reason": short English explanation of WHY the suggested word or phrase is a better choice than the original.
+- "reason_my": Myanmar translation of "reason", same rules as "explanation_my".
+- "definition": dictionary-style meaning of the suggested word or phrase (what it means), independent of this entry. English only.
+- "definition_my": Myanmar translation of "definition", same script and term-keeping rules as "explanation_my". The learner saves this with the word so they can review it later.
+- "example_sentence": a natural, standalone example sentence that uses the suggested word or phrase correctly. English only.
+Both arrays must be present (use [] if there is nothing to suggest). Every field listed above must be a non-empty string — including "explanation_my", "reason_my", and "definition_my".`
 }
 
-type Correction = { original: string; corrected: string; explanation: string }
+type Correction = {
+  original: string
+  corrected: string
+  explanation: string
+  explanation_my?: string
+}
 type Suggestion = {
   type: "vocabulary" | "expression"
   original: string
   suggestion: string
   reason: string
+  reason_my?: string
   definition: string
+  definition_my?: string
   example_sentence: string
 }
 
@@ -124,11 +152,17 @@ function filterCorrections(raw: unknown): Correction[] {
       isNonEmptyString(r.corrected) &&
       isNonEmptyString(r.explanation)
     ) {
-      out.push({
+      const correction: Correction = {
         original: r.original,
         corrected: r.corrected,
         explanation: r.explanation,
-      })
+      }
+      // explanation_my is optional per the backward-compat note in
+      // DATABASE_SPEC.md §6 — keep the row even when the model omits it.
+      if (isNonEmptyString(r.explanation_my)) {
+        correction.explanation_my = r.explanation_my
+      }
+      out.push(correction)
     }
   }
   return out
@@ -148,14 +182,21 @@ function filterSuggestions(raw: unknown): Suggestion[] {
       isNonEmptyString(r.definition) &&
       isNonEmptyString(r.example_sentence)
     ) {
-      out.push({
+      const suggestion: Suggestion = {
         type: r.type,
         original: r.original,
         suggestion: r.suggestion,
         reason: r.reason,
         definition: r.definition,
         example_sentence: r.example_sentence,
-      })
+      }
+      if (isNonEmptyString(r.reason_my)) {
+        suggestion.reason_my = r.reason_my
+      }
+      if (isNonEmptyString(r.definition_my)) {
+        suggestion.definition_my = r.definition_my
+      }
+      out.push(suggestion)
     }
   }
   return out

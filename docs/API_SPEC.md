@@ -506,6 +506,10 @@ Task: Analyze the following journal entry for grammar mistakes and vocabulary.
 Entry: <truncated body>
 ```
 
+**Bilingual explanation fields.** Every correction includes `explanation_my` alongside `explanation`, and every suggestion includes `reason_my` alongside `reason`. Both fields are required outputs from Gemini — the prompt instructs the model to write the English explanation first, then the Myanmar translation of that same explanation. Guided-question endpoints (`/api/ai/guide`, `/api/ai/draft`) stay English-only because those are writing prompts, not explanations of grammar rules.
+
+For backward compatibility, the UI must treat `explanation_my` and `reason_my` as optional — feedback rows written before this change will not have them. See `DATABASE_SPEC.md` §6 for the JSONB shape.
+
 **Success response `201`:**
 
 ```json
@@ -516,9 +520,10 @@ Entry: <truncated body>
     "entry_id": "uuid",
     "corrections": [
       {
-        "original":    "I goed to the market yesterday.",
-        "corrected":   "I went to the market yesterday.",
-        "explanation": "'Go' is an irregular verb. The past tense form is 'went'."
+        "original":       "I goed to the market yesterday.",
+        "corrected":      "I went to the market yesterday.",
+        "explanation":    "'Go' is an irregular verb. The past tense form is 'went'.",
+        "explanation_my": "'Go' က irregular verb ဖြစ်ပါတယ်။ past tense မှာ 'went' ကိုသုံးပါ။"
       }
     ],
     "suggestions": [
@@ -527,6 +532,7 @@ Entry: <truncated body>
         "original":         "very good",
         "suggestion":       "excellent",
         "reason":           "'Excellent' is more precise and sounds more natural in writing.",
+        "reason_my":        "'Excellent' က 'very good' ထက် ပိုတိကျပြီး စာအရေးအသားမှာ ပိုသဘာဝကျပါတယ်။",
         "definition":       "Extremely good; outstanding in quality.",
         "example_sentence": "She did an excellent job on the presentation."
       },
@@ -535,6 +541,7 @@ Entry: <truncated body>
         "original":         "I like eat food",
         "suggestion":       "I enjoy eating food",
         "reason":           "In English, after 'enjoy' we use a gerund (-ing form).",
+        "reason_my":        "အင်္ဂလိပ်စာမှာ 'enjoy' ပြီးရင် gerund (-ing form) ကိုသုံးရပါတယ်။",
         "definition":       "To take pleasure in the activity of eating.",
         "example_sentence": "I enjoy eating food with my family on weekends."
       }
@@ -708,6 +715,7 @@ Returns all saved words for the authenticated user, sorted by `created_at` desce
       "id": "uuid",
       "word": "delighted",
       "definition": "Very pleased and happy.",
+      "definition_my": "အလွန်ပျော်ရွှင်ပြီး ကျေနပ်နေတဲ့ အခြေအနေ။",
       "example_sentence": "She was delighted to receive the good news.",
       "source_entry_id": "uuid",
       "created_at": "2026-06-14T10:30:00Z"
@@ -716,6 +724,8 @@ Returns all saved words for the authenticated user, sorted by `created_at` desce
   "error": null
 }
 ```
+
+> `definition_my` may be `null` for words saved before bilingual definitions were introduced, or for any future non-AI-sourced word entries. The UI must render gracefully when it's absent.
 
 **Possible errors:**
 
@@ -740,6 +750,7 @@ Saves a new word to the authenticated user's vocabulary book. The word, definiti
 {
   word:             string   // required, 1–100 characters
   definition:       string   // required, 1–500 characters
+  definition_my?:   string   // optional, 1–500 characters — Myanmar translation of definition
   example_sentence: string   // required, 1–500 characters
   source_entry_id?: string   // optional, UUID of the entry where the word was found
 }
@@ -748,8 +759,11 @@ Saves a new word to the authenticated user's vocabulary book. The word, definiti
 **Validation rules:**
 - `word` must not be empty or whitespace-only
 - `definition` must not be empty
+- `definition_my`, if provided, must not exceed 500 characters (empty string is treated as omitted)
 - `example_sentence` must not be empty
 - `source_entry_id`, if provided, must be a valid UUID belonging to the authenticated user
+
+> `definition_my` is **optional** because the column is nullable in the database (see `DATABASE_SPEC.md` §7). In practice the AI-sourced save flow always sends it — it comes from the same suggestion the user clicked "Save" on — but a future manual "Add a word" flow can omit it.
 
 **Success response `201`:**
 
@@ -760,6 +774,7 @@ Saves a new word to the authenticated user's vocabulary book. The word, definiti
     "id": "uuid",
     "word": "delighted",
     "definition": "Very pleased and happy.",
+    "definition_my": "အလွန်ပျော်ရွှင်ပြီး ကျေနပ်နေတဲ့ အခြေအနေ။",
     "example_sentence": "She was delighted to receive the good news.",
     "source_entry_id": "uuid",
     "created_at": "2026-06-14T10:30:00Z"

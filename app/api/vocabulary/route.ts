@@ -8,7 +8,7 @@ import {
 } from "@/lib/utils/api-response"
 
 const WORD_COLUMNS =
-  "id, word, definition, example_sentence, source_entry_id, created_at"
+  "id, word, definition, definition_my, example_sentence, source_entry_id, created_at"
 
 const UUID_PATTERN =
   /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i
@@ -74,6 +74,23 @@ export async function POST(request: NextRequest) {
     return jsonValidation("definition must not exceed 500 characters")
   }
 
+  // Optional Myanmar translation of the definition. Empty string is treated as
+  // omitted (matches the API_SPEC §6 note); whitespace-only is rejected before
+  // length is checked so a 600-char whitespace blob still fails fast.
+  let definitionMy: string | null = null
+  if (payload.definition_my !== undefined && payload.definition_my !== null) {
+    if (typeof payload.definition_my !== "string") {
+      return jsonValidation("definition_my must be a string")
+    }
+    const trimmed = payload.definition_my.trim()
+    if (trimmed.length > 0) {
+      if (trimmed.length > 500) {
+        return jsonValidation("definition_my must not exceed 500 characters")
+      }
+      definitionMy = trimmed
+    }
+  }
+
   const exampleSentence =
     typeof payload.example_sentence === "string"
       ? payload.example_sentence.trim()
@@ -109,6 +126,7 @@ export async function POST(request: NextRequest) {
       user_id: user.id,
       word,
       definition,
+      definition_my: definitionMy,
       example_sentence: exampleSentence,
       source_entry_id: sourceEntryId,
     })

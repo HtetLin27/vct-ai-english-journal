@@ -10,6 +10,7 @@ interface Props {
   original: string
   suggestion: string
   reason: string
+  reasonMy?: string
   definition: string
   example_sentence: string
   onSave?: () => Promise<SaveResult>
@@ -22,6 +23,7 @@ export function SuggestionCard({
   original,
   suggestion,
   reason,
+  reasonMy,
   definition,
   onSave,
 }: Props) {
@@ -44,10 +46,18 @@ export function SuggestionCard({
         <span className="font-medium text-green-700">{suggestion}</span>
       </p>
       <p className="mt-2 text-sm text-gray-600">{definition}</p>
-      <p className="mt-1 text-sm text-gray-500">
+      <p className="mt-1 text-sm text-gray-600">
         <span aria-hidden>💬 </span>
         {reason}
       </p>
+      {reasonMy && (
+        <p
+          lang="my"
+          className="mt-1 text-sm leading-relaxed text-gray-500"
+        >
+          {reasonMy}
+        </p>
+      )}
       {type === "vocabulary" && (
         <div className="mt-3 flex flex-col items-end gap-1">
           {saveState === "saved" ? (
