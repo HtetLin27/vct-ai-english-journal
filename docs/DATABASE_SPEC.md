@@ -189,6 +189,25 @@ CREATE TRIGGER journal_entries_set_updated_at
   EXECUTE FUNCTION public.set_updated_at();
 ```
 
+### Full-Text Search Computed Column (`fts_doc`)
+
+```sql
+CREATE OR REPLACE FUNCTION public.fts_doc(public.journal_entries)
+RETURNS tsvector
+LANGUAGE sql
+IMMUTABLE
+PARALLEL SAFE
+AS $$
+  SELECT to_tsvector('english', $1.title || ' ' || $1.body)
+$$;
+```
+
+**Why it exists.** The search endpoint (`GET /api/entries/search`) needs to issue the predicate `to_tsvector('english', title || ' ' || body) @@ plainto_tsquery('english', q)`. Supabase's PostgREST `.textSearch()` method only accepts a column or function name as its target — it cannot operate on a raw SQL expression. Adding this single-argument table-row function lets PostgREST expose `fts_doc` as a virtual column on `journal_entries`, so the route can call `.textSearch('fts_doc', q, { type: 'plain', config: 'english' })`.
+
+**Why it reuses the existing index.** The function body is the exact expression that `idx_journal_entries_fts` was built on (`to_tsvector('english', title || ' ' || body)`). Postgres recognizes the equivalent expression at plan time and uses the GIN index via a `Bitmap Index Scan`, so this approach adds no storage overhead and no new index — verified with `EXPLAIN` after the migration. The alternative (adding a generated stored `tsvector` column and reindexing) would have worked too but at the cost of an extra column per row.
+
+**Properties.** `IMMUTABLE` lets the planner pre-evaluate the expression and match the functional index. `PARALLEL SAFE` allows the planner to use parallel workers if it chooses. Both are required for the index match to fire reliably.
+
 ### Row Level Security
 
 ```sql
@@ -605,6 +624,20 @@ CREATE TRIGGER journal_entries_set_updated_at
   BEFORE UPDATE ON public.journal_entries
   FOR EACH ROW
   EXECUTE FUNCTION public.set_updated_at();
+
+-- Computed-column function exposed to PostgREST so the search endpoint
+-- can call .textSearch('fts_doc', q, { type: 'plain', config: 'english' }).
+-- The expression matches idx_journal_entries_fts above, so Postgres
+-- reuses that GIN index — no extra column, no extra index. See §5
+-- "Full-Text Search Computed Column" for full rationale.
+CREATE OR REPLACE FUNCTION public.fts_doc(public.journal_entries)
+RETURNS tsvector
+LANGUAGE sql
+IMMUTABLE
+PARALLEL SAFE
+AS $$
+  SELECT to_tsvector('english', $1.title || ' ' || $1.body)
+$$;
 
 
 -- ============================================================
