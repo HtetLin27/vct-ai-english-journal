@@ -761,14 +761,17 @@ See full specification in Section 7.
 
 ```ts
 {
-  type:        "vocabulary" | "expression"
-  original:    string
-  suggestion:  string
-  reason:      string
-  entry_id:    string
-  onSave?:     (word: string) => void  // only for vocabulary type
+  type:             "vocabulary" | "expression"
+  original:         string
+  suggestion:       string
+  reason:           string
+  definition:       string
+  example_sentence: string
+  onSave?:          () => Promise<"saved" | "error">  // only used for vocabulary type
 }
 ```
+
+The parent (`AiFeedbackPanel`) closes over the full suggestion when wiring `onSave`, so the card itself doesn't need `entry_id` or the suggestion object as arguments. The card uses the returned `"saved" | "error"` to drive its own button state (`idle → saving → saved | error`); the `400 "already in your vocabulary book"` case is treated as `"saved"` by the parent.
 
 **Where used:** Inside `AiFeedbackPanel`.
 

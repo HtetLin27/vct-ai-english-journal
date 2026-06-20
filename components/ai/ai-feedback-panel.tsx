@@ -4,7 +4,7 @@ import Link from "next/link"
 import { useState } from "react"
 import { Button } from "@/components/ui/button"
 import { CorrectionCard } from "@/components/ai/correction-card"
-import { SuggestionCard } from "@/components/ai/suggestion-card"
+import { SuggestionCard, type SaveResult } from "@/components/ai/suggestion-card"
 
 interface Correction {
   original: string
@@ -17,6 +17,8 @@ interface Suggestion {
   original: string
   suggestion: string
   reason: string
+  definition: string
+  example_sentence: string
 }
 
 interface Feedback {
@@ -36,6 +38,35 @@ export function AiFeedbackPanel({ entryId }: Props) {
   const [loading, setLoading] = useState(false)
   const [feedback, setFeedback] = useState<Feedback | null>(null)
   const [error, setError] = useState<PanelError | null>(null)
+
+  async function handleSaveWord(suggestion: Suggestion): Promise<SaveResult> {
+    try {
+      const res = await fetch("/api/vocabulary", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          word: suggestion.suggestion,
+          definition: suggestion.definition,
+          example_sentence: suggestion.example_sentence,
+          source_entry_id: entryId,
+        }),
+      })
+
+      if (res.ok) return "saved"
+
+      // Treat the unique-constraint duplicate as success: the user's intent
+      // (word in vocabulary book) is already satisfied.
+      if (res.status === 400) {
+        const json = await res.json().catch(() => null)
+        if (json?.error === "This word is already in your vocabulary book") {
+          return "saved"
+        }
+      }
+      return "error"
+    } catch {
+      return "error"
+    }
+  }
 
   async function requestFeedback() {
     setLoading(true)
@@ -180,7 +211,9 @@ export function AiFeedbackPanel({ entryId }: Props) {
                   original={s.original}
                   suggestion={s.suggestion}
                   reason={s.reason}
-                  entry_id={entryId}
+                  definition={s.definition}
+                  example_sentence={s.example_sentence}
+                  onSave={() => handleSaveWord(s)}
                 />
               ))}
             </div>

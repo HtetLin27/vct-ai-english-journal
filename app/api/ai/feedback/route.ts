@@ -36,6 +36,8 @@ const MOCK_FEEDBACK = {
       suggestion: "excellent",
       reason:
         "'Excellent' is more precise and sounds more natural in writing than 'very good'.",
+      definition: "Extremely good; outstanding in quality.",
+      example_sentence: "She did an excellent job on the presentation.",
     },
     {
       type: "expression" as const,
@@ -43,6 +45,8 @@ const MOCK_FEEDBACK = {
       suggestion: "I enjoy eating food",
       reason:
         "After 'enjoy' in English we use a gerund (-ing form), and 'enjoy' is a more natural choice here.",
+      definition: "To take pleasure in the activity of eating.",
+      example_sentence: "I enjoy eating food with my family on weekends.",
     },
   ],
 }
@@ -82,10 +86,21 @@ Respond with ONLY a JSON object (no markdown, no code fences, no commentary) wit
     { "original": string, "corrected": string, "explanation": string }
   ],
   "suggestions": [
-    { "type": "vocabulary" | "expression", "original": string, "suggestion": string, "reason": string }
+    {
+      "type": "vocabulary" | "expression",
+      "original": string,
+      "suggestion": string,
+      "reason": string,
+      "definition": string,
+      "example_sentence": string
+    }
   ]
 }
-Both arrays must be present (use [] if there is nothing to suggest).`
+Field meanings for each suggestion:
+- "reason": short explanation of WHY the suggested word or phrase is a better choice than the original.
+- "definition": dictionary-style meaning of the suggested word or phrase (what it means), independent of this entry.
+- "example_sentence": a natural, standalone example sentence that uses the suggested word or phrase correctly.
+Both arrays must be present (use [] if there is nothing to suggest). Every field in every suggestion must be a non-empty string.`
 }
 
 type Correction = { original: string; corrected: string; explanation: string }
@@ -94,6 +109,8 @@ type Suggestion = {
   original: string
   suggestion: string
   reason: string
+  definition: string
+  example_sentence: string
 }
 
 function filterCorrections(raw: unknown): Correction[] {
@@ -127,13 +144,17 @@ function filterSuggestions(raw: unknown): Suggestion[] {
       (r.type === "vocabulary" || r.type === "expression") &&
       isNonEmptyString(r.original) &&
       isNonEmptyString(r.suggestion) &&
-      isNonEmptyString(r.reason)
+      isNonEmptyString(r.reason) &&
+      isNonEmptyString(r.definition) &&
+      isNonEmptyString(r.example_sentence)
     ) {
       out.push({
         type: r.type,
         original: r.original,
         suggestion: r.suggestion,
         reason: r.reason,
+        definition: r.definition,
+        example_sentence: r.example_sentence,
       })
     }
   }

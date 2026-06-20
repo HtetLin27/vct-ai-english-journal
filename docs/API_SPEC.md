@@ -523,16 +523,20 @@ Entry: <truncated body>
     ],
     "suggestions": [
       {
-        "type":       "vocabulary",
-        "original":   "very good",
-        "suggestion": "excellent",
-        "reason":     "'Excellent' is more precise and sounds more natural in writing."
+        "type":             "vocabulary",
+        "original":         "very good",
+        "suggestion":       "excellent",
+        "reason":           "'Excellent' is more precise and sounds more natural in writing.",
+        "definition":       "Extremely good; outstanding in quality.",
+        "example_sentence": "She did an excellent job on the presentation."
       },
       {
-        "type":       "expression",
-        "original":   "I like eat food",
-        "suggestion": "I enjoy eating food",
-        "reason":     "In English, after 'enjoy' we use a gerund (-ing form)."
+        "type":             "expression",
+        "original":         "I like eat food",
+        "suggestion":       "I enjoy eating food",
+        "reason":           "In English, after 'enjoy' we use a gerund (-ing form).",
+        "definition":       "To take pleasure in the activity of eating.",
+        "example_sentence": "I enjoy eating food with my family on weekends."
       }
     ],
     "created_at": "2026-06-14T10:00:00Z"
