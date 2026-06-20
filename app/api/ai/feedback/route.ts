@@ -7,6 +7,7 @@
 import { NextRequest } from "next/server"
 import { createServerClient } from "@/lib/supabase/server"
 import { geminiFlash } from "@/lib/gemini/client"
+import { extractJsonObject, isNonEmptyString } from "@/lib/gemini/parse-utils"
 import {
   jsonSuccess,
   jsonUnauthorized,
@@ -45,29 +46,12 @@ Respond with ONLY a JSON object (no markdown, no code fences, no commentary) wit
 Both arrays must be present (use [] if there is nothing to suggest).`
 }
 
-function extractJsonObject(text: string): string {
-  // Gemini sometimes wraps JSON in ```json ... ``` fences or adds prose.
-  // Strip fences and isolate the outermost {...} block before parsing.
-  const fenceStripped = text
-    .replace(/^\s*```(?:json)?\s*/i, "")
-    .replace(/\s*```\s*$/i, "")
-    .trim()
-  const first = fenceStripped.indexOf("{")
-  const last = fenceStripped.lastIndexOf("}")
-  if (first === -1 || last === -1 || last <= first) return fenceStripped
-  return fenceStripped.slice(first, last + 1)
-}
-
 type Correction = { original: string; corrected: string; explanation: string }
 type Suggestion = {
   type: "vocabulary" | "expression"
   original: string
   suggestion: string
   reason: string
-}
-
-function isNonEmptyString(value: unknown): value is string {
-  return typeof value === "string" && value.trim().length > 0
 }
 
 function filterCorrections(raw: unknown): Correction[] {
