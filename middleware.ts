@@ -63,7 +63,11 @@ function redirectWithCookies(url: URL, source: NextResponse) {
 }
 
 export const config = {
+  // Skip /api/* — those routes self-authenticate via `requireUser()`. Running
+  // the middleware's own `auth.getUser()` on every API call doubled the cost
+  // of every Supabase Auth round-trip and made transient upstream slowness
+  // surface as long hangs on data fetches like /api/entries/search.
   matcher: [
-    "/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)",
+    "/((?!api|_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)",
   ],
 }

@@ -18,11 +18,10 @@ const MOCK_DRAFT =
   "Today was a calm but interesting day at work. My manager gave me a new project to lead, which made me both nervous and excited about what is ahead. I went home feeling tired but proud of what I accomplished, and I am looking forward to seeing how the project unfolds tomorrow."
 
 import { NextRequest } from "next/server"
-import { createServerClient } from "@/lib/supabase/server"
+import { requireUser } from "@/lib/supabase/auth-guard"
 import { geminiFlash } from "@/lib/gemini/client"
 import {
   jsonSuccess,
-  jsonUnauthorized,
   jsonInternal,
   jsonValidation,
   jsonError,
@@ -71,11 +70,8 @@ function sanitizeDraft(raw: string): string {
 }
 
 export async function POST(request: NextRequest) {
-  const supabase = createServerClient()
-  const {
-    data: { user },
-  } = await supabase.auth.getUser()
-  if (!user) return jsonUnauthorized()
+  const { user, supabase, errorResponse } = await requireUser()
+  if (errorResponse) return errorResponse
 
   let parsedBody: unknown
   try {

@@ -1,8 +1,7 @@
 import { NextRequest } from "next/server"
-import { createServerClient } from "@/lib/supabase/server"
+import { requireUser } from "@/lib/supabase/auth-guard"
 import {
   jsonSuccess,
-  jsonUnauthorized,
   jsonInternal,
   jsonValidation,
   jsonNotFound,
@@ -26,11 +25,8 @@ export async function GET(
   _request: NextRequest,
   { params }: { params: { id: string } }
 ) {
-  const supabase = createServerClient()
-  const {
-    data: { user },
-  } = await supabase.auth.getUser()
-  if (!user) return jsonUnauthorized()
+  const { user, supabase, errorResponse } = await requireUser()
+  if (errorResponse) return errorResponse
 
   const { data: entry, error } = await supabase
     .from("journal_entries")
@@ -47,11 +43,8 @@ export async function PUT(
   request: NextRequest,
   { params }: { params: { id: string } }
 ) {
-  const supabase = createServerClient()
-  const {
-    data: { user },
-  } = await supabase.auth.getUser()
-  if (!user) return jsonUnauthorized()
+  const { user, supabase, errorResponse } = await requireUser()
+  if (errorResponse) return errorResponse
 
   // Ownership check before any update logic — return 404 if the entry
   // doesn't exist OR belongs to another user (don't leak existence).
@@ -159,11 +152,8 @@ export async function DELETE(
   _request: NextRequest,
   { params }: { params: { id: string } }
 ) {
-  const supabase = createServerClient()
-  const {
-    data: { user },
-  } = await supabase.auth.getUser()
-  if (!user) return jsonUnauthorized()
+  const { user, supabase, errorResponse } = await requireUser()
+  if (errorResponse) return errorResponse
 
   // Ownership check first — return 404 without exposing other users' rows.
   const { data: existing, error: fetchErr } = await supabase

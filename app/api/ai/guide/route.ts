@@ -22,12 +22,11 @@ const MOCK_QUESTIONS: string[] = [
 ]
 
 import { NextRequest } from "next/server"
-import { createServerClient } from "@/lib/supabase/server"
+import { requireUser } from "@/lib/supabase/auth-guard"
 import { geminiFlash } from "@/lib/gemini/client"
 import { extractJsonObject, isNonEmptyString } from "@/lib/gemini/parse-utils"
 import {
   jsonSuccess,
-  jsonUnauthorized,
   jsonInternal,
   jsonValidation,
   jsonError,
@@ -76,11 +75,8 @@ function parseGuide(text: string): { questions: string[] } | null {
 }
 
 export async function POST(request: NextRequest) {
-  const supabase = createServerClient()
-  const {
-    data: { user },
-  } = await supabase.auth.getUser()
-  if (!user) return jsonUnauthorized()
+  const { user, supabase, errorResponse } = await requireUser()
+  if (errorResponse) return errorResponse
 
   let parsedBody: unknown = {}
   const contentType = request.headers.get("content-type") ?? ""

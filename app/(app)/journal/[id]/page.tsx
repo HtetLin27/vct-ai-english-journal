@@ -2,6 +2,7 @@ import Link from "next/link"
 import { createServerClient } from "@/lib/supabase/server"
 import { Button } from "@/components/ui/button"
 import { DeleteEntryButton } from "@/components/journal/delete-entry-button"
+import { AiFeedbackPanel } from "@/components/ai/ai-feedback-panel"
 
 const MOOD_META: Record<string, { emoji: string; label: string }> = {
   happy: { emoji: "😊", label: "happy" },
@@ -149,6 +150,8 @@ export default async function ViewEntryPage({ params }: PageProps) {
         </Button>
         <DeleteEntryButton entryId={entry.id} />
       </div>
+
+      <AiFeedbackPanel entryId={entry.id} />
     </main>
   )
 }

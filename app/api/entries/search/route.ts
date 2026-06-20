@@ -1,8 +1,7 @@
 import { NextRequest } from "next/server"
-import { createServerClient } from "@/lib/supabase/server"
+import { requireUser } from "@/lib/supabase/auth-guard"
 import {
   jsonSuccess,
-  jsonUnauthorized,
   jsonInternal,
   jsonValidation,
 } from "@/lib/utils/api-response"
@@ -21,11 +20,8 @@ function isValidDate(str: string): boolean {
 }
 
 export async function GET(request: NextRequest) {
-  const supabase = createServerClient()
-  const {
-    data: { user },
-  } = await supabase.auth.getUser()
-  if (!user) return jsonUnauthorized()
+  const { user, supabase, errorResponse } = await requireUser()
+  if (errorResponse) return errorResponse
 
   const params = request.nextUrl.searchParams
   const q = params.get("q")?.trim() || null

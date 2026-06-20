@@ -1,8 +1,7 @@
 import { NextRequest } from "next/server"
-import { createServerClient } from "@/lib/supabase/server"
+import { requireUser } from "@/lib/supabase/auth-guard"
 import {
   jsonSuccess,
-  jsonUnauthorized,
   jsonInternal,
   jsonValidation,
 } from "@/lib/utils/api-response"
@@ -30,11 +29,8 @@ function dateMinusOneDay(date: string): string {
 }
 
 export async function GET() {
-  const supabase = createServerClient()
-  const {
-    data: { user },
-  } = await supabase.auth.getUser()
-  if (!user) return jsonUnauthorized()
+  const { user, supabase, errorResponse } = await requireUser()
+  if (errorResponse) return errorResponse
 
   const { data, error } = await supabase
     .from("journal_entries")
@@ -47,11 +43,8 @@ export async function GET() {
 }
 
 export async function POST(request: NextRequest) {
-  const supabase = createServerClient()
-  const {
-    data: { user },
-  } = await supabase.auth.getUser()
-  if (!user) return jsonUnauthorized()
+  const { user, supabase, errorResponse } = await requireUser()
+  if (errorResponse) return errorResponse
 
   let parsed: unknown
   try {

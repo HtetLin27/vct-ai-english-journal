@@ -48,12 +48,11 @@ const MOCK_FEEDBACK = {
 }
 
 import { NextRequest } from "next/server"
-import { createServerClient } from "@/lib/supabase/server"
+import { requireUser } from "@/lib/supabase/auth-guard"
 import { geminiFlash } from "@/lib/gemini/client"
 import { extractJsonObject, isNonEmptyString } from "@/lib/gemini/parse-utils"
 import {
   jsonSuccess,
-  jsonUnauthorized,
   jsonInternal,
   jsonValidation,
   jsonNotFound,
@@ -160,11 +159,8 @@ function parseFeedback(text: string): {
 }
 
 export async function POST(request: NextRequest) {
-  const supabase = createServerClient()
-  const {
-    data: { user },
-  } = await supabase.auth.getUser()
-  if (!user) return jsonUnauthorized()
+  const { user, supabase, errorResponse } = await requireUser()
+  if (errorResponse) return errorResponse
 
   let parsedBody: unknown
   try {
