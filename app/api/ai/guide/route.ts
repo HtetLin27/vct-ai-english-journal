@@ -1,8 +1,25 @@
-// NOTE: The Gemini call in this route cannot be exercised end-to-end from the
-// current local environment (Gemini access is blocked by region — tracked
-// separately). The defensive error handling around the Gemini call and JSON
-// parse below is intentional and must be validated against the live API once
-// access is available (deployed to Vercel or run from an allowed region).
+// =============================================================================
+// TEMPORARY: MOCK MODE
+// =============================================================================
+// When MOCK_AI_RESPONSES=true (in .env.local), this route bypasses the real
+// Gemini call and returns hardcoded mock guided questions so end-to-end local
+// testing is possible. This exists because Gemini access is currently blocked
+// from the developer's region — tracked separately.
+//
+// >>> MOCK_AI_RESPONSES MUST BE UNSET (OR FALSE) IN PRODUCTION. <<<
+// Remove this branch once Gemini is reachable from every environment we run.
+// =============================================================================
+//
+// The defensive error handling around the real Gemini call and JSON parse
+// below is intentional and must be validated against the live API once access
+// is available (deployed to Vercel or run from an allowed region).
+
+const MOCK_QUESTIONS: string[] = [
+  "What happened today that made you feel something strongly?",
+  "Was there a moment today where you had to make a decision? What did you choose?",
+  "Did you talk to anyone interesting today? What did you discuss?",
+  "What is one thing you learned or noticed today?",
+]
 
 import { NextRequest } from "next/server"
 import { createServerClient } from "@/lib/supabase/server"
@@ -103,6 +120,11 @@ export async function POST(request: NextRequest) {
       "AI features are disabled. Enable them in Settings.",
       403
     )
+  }
+
+  if (process.env.MOCK_AI_RESPONSES === "true") {
+    // TEMPORARY mock path — see header comment.
+    return jsonSuccess({ questions: MOCK_QUESTIONS })
   }
 
   const prompt = buildGuidePrompt(topic)

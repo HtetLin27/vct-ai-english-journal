@@ -1,8 +1,51 @@
-// NOTE: The Gemini call in this route cannot be exercised end-to-end from the
-// current local environment (Gemini access is blocked by region — tracked
-// separately). The defensive error handling around the Gemini call and JSON
-// parse below is intentional and must be validated against the live API once
-// access is available (deployed to Vercel or run from an allowed region).
+// =============================================================================
+// TEMPORARY: MOCK MODE
+// =============================================================================
+// When MOCK_AI_RESPONSES=true (in .env.local), this route bypasses the real
+// Gemini call and returns hardcoded mock feedback so end-to-end local testing
+// is possible. This exists because Gemini access is currently blocked from the
+// developer's region — tracked separately.
+//
+// >>> MOCK_AI_RESPONSES MUST BE UNSET (OR FALSE) IN PRODUCTION. <<<
+// Remove this branch once Gemini is reachable from every environment we run.
+// =============================================================================
+//
+// The defensive error handling around the real Gemini call and JSON parse
+// below is intentional and must be validated against the live API once access
+// is available (deployed to Vercel or run from an allowed region).
+
+const MOCK_FEEDBACK = {
+  corrections: [
+    {
+      original: "I goed to the market yesterday.",
+      corrected: "I went to the market yesterday.",
+      explanation:
+        "'Go' is an irregular verb. Its past tense form is 'went', not 'goed'.",
+    },
+    {
+      original: "She don't like coffee.",
+      corrected: "She doesn't like coffee.",
+      explanation:
+        "With a third-person singular subject ('she'), use 'doesn't' instead of 'don't'.",
+    },
+  ],
+  suggestions: [
+    {
+      type: "vocabulary" as const,
+      original: "very good",
+      suggestion: "excellent",
+      reason:
+        "'Excellent' is more precise and sounds more natural in writing than 'very good'.",
+    },
+    {
+      type: "expression" as const,
+      original: "I like eat food",
+      suggestion: "I enjoy eating food",
+      reason:
+        "After 'enjoy' in English we use a gerund (-ing form), and 'enjoy' is a more natural choice here.",
+    },
+  ],
+}
 
 import { NextRequest } from "next/server"
 import { createServerClient } from "@/lib/supabase/server"
@@ -165,30 +208,37 @@ export async function POST(request: NextRequest) {
 
   if (entryError || !entry) return jsonNotFound("Entry not found")
 
-  const truncatedBody = entry.body.slice(0, MAX_BODY_CHARS)
-  const prompt = buildFeedbackPrompt(truncatedBody)
+  let feedback: { corrections: Correction[]; suggestions: Suggestion[] } | null
 
-  let geminiText: string
-  try {
-    const result = await geminiFlash.generateContent(prompt)
-    geminiText = result.response.text()
-  } catch (err) {
-    console.error("[ai.feedback] Gemini request failed", {
-      userId: user.id,
-      entryId,
-      error: err instanceof Error ? err.message : String(err),
-    })
-    return jsonError("AI service unavailable. Please try again later.", 502)
-  }
+  if (process.env.MOCK_AI_RESPONSES === "true") {
+    // TEMPORARY mock path — see header comment.
+    feedback = MOCK_FEEDBACK
+  } else {
+    const truncatedBody = entry.body.slice(0, MAX_BODY_CHARS)
+    const prompt = buildFeedbackPrompt(truncatedBody)
 
-  const feedback = parseFeedback(geminiText)
-  if (!feedback) {
-    console.error("[ai.feedback] Gemini response was not valid JSON", {
-      userId: user.id,
-      entryId,
-      sample: geminiText.slice(0, 500),
-    })
-    return jsonError("AI service unavailable. Please try again later.", 502)
+    let geminiText: string
+    try {
+      const result = await geminiFlash.generateContent(prompt)
+      geminiText = result.response.text()
+    } catch (err) {
+      console.error("[ai.feedback] Gemini request failed", {
+        userId: user.id,
+        entryId,
+        error: err instanceof Error ? err.message : String(err),
+      })
+      return jsonError("AI service unavailable. Please try again later.", 502)
+    }
+
+    feedback = parseFeedback(geminiText)
+    if (!feedback) {
+      console.error("[ai.feedback] Gemini response was not valid JSON", {
+        userId: user.id,
+        entryId,
+        sample: geminiText.slice(0, 500),
+      })
+      return jsonError("AI service unavailable. Please try again later.", 502)
+    }
   }
 
   const { data: inserted, error: insertError } = await supabase
