@@ -519,11 +519,13 @@ ai-english-journal/
 | Phase 2  | Authentication     | Complete    |
 | Phase 3  | Journal CRUD       | Complete    |
 | Phase 4  | Search & Filtering | Complete    |
-| Phase 5  | AI English Teacher | In Progress |
-| Phase 6  | Vocabulary Book    | Not Started |
+| Phase 5  | AI English Teacher | Complete\*  |
+| Phase 6  | Vocabulary Book    | In Progress |
 | Phase 7  | Progress Tracking  | Not Started |
 | Phase 8  | Settings           | Not Started |
 | Phase 9  | Polish & Testing   | Not Started |
 | Phase 10 | Deployment         | Not Started |
 
 > Update this table as phases are completed. Use: `Not Started` → `In Progress` → `Complete`.
+
+> \* Phase 5 was tested end-to-end against `MOCK_AI_RESPONSES=true`. Live Gemini verification is pending deployment because Gemini is currently unreachable from the developer's region. Before considering this phase fully shipped, confirm the three `/api/ai/*` routes work against the real Gemini API once deployed to Vercel (and disable `MOCK_AI_RESPONSES` there — see Phase 10 checklist).
