@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -10,6 +10,7 @@ import {
   type MoodValue,
 } from "@/components/journal/mood-selector"
 import { TagInput } from "@/components/journal/tag-input"
+import { GuidedQuestions } from "@/components/ai/guided-questions"
 
 export interface EntryFormValues {
   entry_date: string
@@ -27,6 +28,7 @@ interface Props {
   // Return null on success (parent will navigate away),
   // or a human-readable error message string on failure.
   onSubmit: (values: EntryFormValues) => Promise<string | null>
+  showGuidedQuestions?: boolean
 }
 
 export function EntryForm({
@@ -35,6 +37,7 @@ export function EntryForm({
   submittingLabel,
   cancelHref,
   onSubmit,
+  showGuidedQuestions = false,
 }: Props) {
   const router = useRouter()
 
@@ -48,6 +51,19 @@ export function EntryForm({
   const [bodyError, setBodyError] = useState<string | null>(null)
   const [formError, setFormError] = useState<string | null>(null)
   const [loading, setLoading] = useState(false)
+  const [draftAlert, setDraftAlert] = useState(false)
+
+  useEffect(() => {
+    if (!draftAlert) return
+    const id = setTimeout(() => setDraftAlert(false), 3000)
+    return () => clearTimeout(id)
+  }, [draftAlert])
+
+  function handleDraftReady(draft: string) {
+    setBody(draft)
+    setBodyError(null)
+    setDraftAlert(true)
+  }
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
@@ -90,6 +106,15 @@ export function EntryForm({
 
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
+      {draftAlert && (
+        <div
+          role="status"
+          className="rounded-md border border-green-200 bg-green-50 px-3 py-2 text-sm text-green-700"
+        >
+          ✅ Draft created! Review and edit it before saving.
+        </div>
+      )}
+
       <div className="space-y-2">
         <Label
           htmlFor="entry-date"
@@ -156,6 +181,11 @@ export function EntryForm({
           className="flex min-h-[180px] w-full rounded-md border border-gray-200 bg-white px-3 py-2 text-base leading-7 text-gray-700 placeholder:text-gray-400 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-green-600 md:min-h-[240px]"
         />
         {bodyError && <p className="text-sm text-red-600">{bodyError}</p>}
+        {showGuidedQuestions && (
+          <div className="pt-2">
+            <GuidedQuestions onDraftReady={handleDraftReady} />
+          </div>
+        )}
       </div>
 
       {formError && (

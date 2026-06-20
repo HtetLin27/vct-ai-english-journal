@@ -56,6 +56,7 @@ export default function NewEntryPage() {
         submittingLabel="Saving…"
         cancelHref="/journal"
         onSubmit={handleCreate}
+        showGuidedQuestions
       />
     </main>
   )
