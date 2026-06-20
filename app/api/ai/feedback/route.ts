@@ -66,6 +66,54 @@ type Suggestion = {
   reason: string
 }
 
+function isNonEmptyString(value: unknown): value is string {
+  return typeof value === "string" && value.trim().length > 0
+}
+
+function filterCorrections(raw: unknown): Correction[] {
+  if (!Array.isArray(raw)) return []
+  const out: Correction[] = []
+  for (const item of raw) {
+    if (!item || typeof item !== "object") continue
+    const r = item as Record<string, unknown>
+    if (
+      isNonEmptyString(r.original) &&
+      isNonEmptyString(r.corrected) &&
+      isNonEmptyString(r.explanation)
+    ) {
+      out.push({
+        original: r.original,
+        corrected: r.corrected,
+        explanation: r.explanation,
+      })
+    }
+  }
+  return out
+}
+
+function filterSuggestions(raw: unknown): Suggestion[] {
+  if (!Array.isArray(raw)) return []
+  const out: Suggestion[] = []
+  for (const item of raw) {
+    if (!item || typeof item !== "object") continue
+    const r = item as Record<string, unknown>
+    if (
+      (r.type === "vocabulary" || r.type === "expression") &&
+      isNonEmptyString(r.original) &&
+      isNonEmptyString(r.suggestion) &&
+      isNonEmptyString(r.reason)
+    ) {
+      out.push({
+        type: r.type,
+        original: r.original,
+        suggestion: r.suggestion,
+        reason: r.reason,
+      })
+    }
+  }
+  return out
+}
+
 function parseFeedback(text: string): {
   corrections: Correction[]
   suggestions: Suggestion[]
@@ -78,13 +126,9 @@ function parseFeedback(text: string): {
   }
   if (!parsed || typeof parsed !== "object") return null
   const obj = parsed as Record<string, unknown>
-  const corrections = Array.isArray(obj.corrections)
-    ? (obj.corrections as Correction[])
-    : null
-  const suggestions = Array.isArray(obj.suggestions)
-    ? (obj.suggestions as Suggestion[])
-    : null
-  if (!corrections || !suggestions) return null
+  const corrections = filterCorrections(obj.corrections)
+  const suggestions = filterSuggestions(obj.suggestions)
+  if (corrections.length === 0 && suggestions.length === 0) return null
   return { corrections, suggestions }
 }
 
