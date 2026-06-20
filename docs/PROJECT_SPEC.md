@@ -520,8 +520,8 @@ ai-english-journal/
 | Phase 3  | Journal CRUD       | Complete    |
 | Phase 4  | Search & Filtering | Complete    |
 | Phase 5  | AI English Teacher | Complete\*  |
-| Phase 6  | Vocabulary Book    | In Progress |
-| Phase 7  | Progress Tracking  | Not Started |
+| Phase 6  | Vocabulary Book    | Complete    |
+| Phase 7  | Progress Tracking  | In Progress |
 | Phase 8  | Settings           | Not Started |
 | Phase 9  | Polish & Testing   | Not Started |
 | Phase 10 | Deployment         | Not Started |
