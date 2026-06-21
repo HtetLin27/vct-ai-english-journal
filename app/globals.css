@@ -61,6 +61,12 @@
   * {
     @apply border-border;
   }
+  :root {
+    /* Tell user-agent widgets (calendar picker glyph, scrollbars, native
+       form indicators) to render in their dark variant so they remain
+       visible against the dark surfaces. */
+    color-scheme: dark;
+  }
   html,
   body {
     background-color: #16181C;
@@ -71,6 +77,22 @@
     font-family: var(--font-display), system-ui, sans-serif;
     font-weight: 600;
     color: #F2F3F5;
+  }
+  /* WebKit fallback for browsers that don't honor color-scheme on the
+     calendar picker indicator (older Safari). Inverts the black glyph
+     to white and tints it toward the mint accent. */
+  input[type="date"]::-webkit-calendar-picker-indicator,
+  input[type="datetime-local"]::-webkit-calendar-picker-indicator,
+  input[type="time"]::-webkit-calendar-picker-indicator,
+  input[type="month"]::-webkit-calendar-picker-indicator,
+  input[type="week"]::-webkit-calendar-picker-indicator {
+    filter: invert(1) brightness(0.95);
+    cursor: pointer;
+    opacity: 0.85;
+  }
+  input[type="date"]::-webkit-calendar-picker-indicator:hover,
+  input[type="datetime-local"]::-webkit-calendar-picker-indicator:hover {
+    opacity: 1;
   }
 }
 
@@ -87,12 +109,15 @@
     color: #D8DAE0;
   }
 
-  /* Mistake highlight in journal body (UI_SPEC §2.3) */
+  /* Mistake highlight in journal body. Wavy coral underline only — no fill.
+     The dark-canvas variant of the spec §2.3 pattern: the underline is the
+     entire discovery cue, the body text reads as continuous prose. */
   .mistake-highlight {
-    background-color: #3D2218;
-    border-bottom: 2px solid #FF6B4A;
-    padding: 0 2px;
-    border-radius: 2px;
+    background-color: transparent;
+    text-decoration: underline wavy #FF6B4A;
+    text-decoration-thickness: 2px;
+    text-underline-offset: 3px;
+    color: inherit;
   }
 
   /* Margin / annotation grid — desktop two-column with 3px coral divider */
