@@ -3,6 +3,7 @@ marp: true
 theme: gaia
 paginate: true
 size: 16:9
+auto-advance: 20
 ---
 
 ## AI English Journal
