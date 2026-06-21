@@ -91,7 +91,7 @@ Please treat the demo account as read/write — feel free to add entries, try th
 ### Setup
 
 ```bash
-git clone https://github.com/<your-username>/ai-english-journal.git
+git clone https://github.com/HtetLin27/ai-english-journal.git
 cd ai-english-journal
 npm install
 ```
