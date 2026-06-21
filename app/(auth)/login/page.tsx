@@ -34,7 +34,13 @@ export default function LoginPage() {
     })
 
     if (signInError) {
-      setError("Invalid email or password. Please try again.")
+      if (signInError.code === "email_not_confirmed") {
+        setError(
+          "Please confirm your email before logging in. Check your inbox for the confirmation link."
+        )
+      } else {
+        setError("Invalid email or password. Please try again.")
+      }
       setLoading(false)
       return
     }
