@@ -178,7 +178,7 @@ export function EntryForm({
           placeholder="Write about your day…"
           value={body}
           onChange={(e) => setBody(e.target.value)}
-          className="flex min-h-[180px] w-full rounded-md border border-gray-200 bg-white px-3 py-2 text-base leading-7 text-gray-700 placeholder:text-gray-400 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-green-600 md:min-h-[240px]"
+          className="flex min-h-[180px] w-full rounded-md border border-gray-200 bg-white px-3 py-2 text-base leading-7 text-gray-700 placeholder:text-gray-500 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-green-600 md:min-h-[240px]"
         />
         {bodyError && <p className="text-sm text-red-600">{bodyError}</p>}
         {showGuidedQuestions && (

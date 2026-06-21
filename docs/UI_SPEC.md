@@ -62,8 +62,8 @@ All colors map to Tailwind CSS utility classes for direct use with shadcn/ui.
 | `gray-50` | `bg-gray-50` | `#f9fafb` | App page background |
 | `gray-100` | `bg-gray-100` | `#f3f4f6` | Subtle section dividers, skeleton loaders |
 | `gray-200` | `border-gray-200` | `#e5e7eb` | Default borders, dividers |
-| `gray-400` | `text-gray-400` | `#9ca3af` | Placeholder text, disabled states |
-| `gray-500` | `text-gray-500` | `#6b7280` | Secondary text, metadata, captions |
+| `gray-400` | `text-gray-400` | `#9ca3af` | Decorative icons only (must be `aria-hidden`). Fails WCAG AA contrast for text on white (≈2.8:1) — do not use for any text users need to read |
+| `gray-500` | `text-gray-500` | `#6b7280` | Secondary text, metadata, captions, placeholder text, inactive nav labels, word counts |
 | `gray-700` | `text-gray-700` | `#374151` | Body text |
 | `gray-900` | `text-gray-900` | `#111827` | Headings, primary text |
 
@@ -94,7 +94,7 @@ font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
 | `h4` | `text-base font-semibold` | 16px | 600 | `gray-800` | Labels, form group titles |
 | Body | `text-base font-normal` | 16px | 400 | `gray-700` | Journal body, descriptions |
 | Small | `text-sm font-normal` | 14px | 400 | `gray-500` | Metadata, captions, helper text |
-| Caption | `text-xs font-normal` | 12px | 400 | `gray-400` | Timestamps, word counts |
+| Caption | `text-xs font-normal` | 12px | 400 | `gray-500` | Timestamps, word counts |
 | Link | `text-sm font-medium` | 14px | 500 | `green-600` | Inline links |
 
 **Journal body text** uses a slightly increased line height for readability:

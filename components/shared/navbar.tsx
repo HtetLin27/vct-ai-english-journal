@@ -135,7 +135,7 @@ export function Navbar({ userEmail }: Props) {
               href={href}
               className={cn(
                 "flex flex-1 flex-col items-center justify-center gap-1 py-3 text-xs",
-                active ? "text-green-600" : "text-gray-400"
+                active ? "text-green-600" : "text-gray-500"
               )}
             >
               <Icon className="h-5 w-5" />

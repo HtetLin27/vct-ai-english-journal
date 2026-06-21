@@ -44,14 +44,14 @@ export function SearchBar({ value, onChange, placeholder }: Props) {
         value={draft}
         onChange={(e) => setDraft(e.target.value)}
         placeholder={placeholder ?? "Search your entries…"}
-        className="w-full rounded-lg border border-gray-200 bg-white py-2 pl-9 pr-9 text-sm text-gray-700 placeholder:text-gray-400 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-green-600"
+        className="w-full rounded-lg border border-gray-200 bg-white py-2 pl-9 pr-9 text-sm text-gray-700 placeholder:text-gray-500 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-green-600"
       />
       {draft && (
         <button
           type="button"
           onClick={clear}
           aria-label="Clear search"
-          className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-700"
+          className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700"
         >
           <X size={16} />
         </button>

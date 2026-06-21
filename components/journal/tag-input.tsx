@@ -63,7 +63,7 @@ export function TagInput({ value, onChange, max = 10 }: Props) {
         onBlur={commitTag}
         placeholder={value.length === 0 ? "Add a tag…" : ""}
         disabled={atMax}
-        className="min-w-[120px] flex-1 bg-transparent text-sm outline-none placeholder:text-gray-400 disabled:cursor-not-allowed"
+        className="min-w-[120px] flex-1 bg-transparent text-sm outline-none placeholder:text-gray-500 disabled:cursor-not-allowed"
       />
     </div>
   )

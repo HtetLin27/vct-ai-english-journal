@@ -80,7 +80,7 @@ export function JournalCard({
                 {tag}
               </span>
             ))}
-            <span className="text-xs text-gray-400">
+            <span className="text-xs text-gray-500">
               {word_count} {word_count === 1 ? "word" : "words"}
             </span>
           </div>
