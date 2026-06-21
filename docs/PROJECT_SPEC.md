@@ -506,6 +506,7 @@ ai-english-journal/
 - Test authentication, journal CRUD, and AI features in production
 - Set up Supabase production database (if using a separate project)
 - **Re-enable email confirmation in Supabase Auth settings before going live** (see `specs/CHANGELOG.md` 2026-06-20 — the toggle was turned off for local dev). Path: Supabase Dashboard → Authentication → Providers → Email → Confirm email.
+- **TODO before deployment: Write a proper README.md for the project, including setup instructions, tech stack overview, and screenshots of the app (dashboard, journal entry, AI feedback panel, vocabulary book). Currently has only the placeholder `# AI English Journal` from Phase 1.**
 
 **Deliverable:** App is live on a public Vercel URL.
 

@@ -4,6 +4,17 @@ Notable decisions, deviations, and deferred work. Each entry is dated and tagged
 
 ---
 
+## 2026-06-21 — README is still the Phase 1 placeholder
+
+**Phase:** 10 (Deployment)
+**Status:** Deferred — MUST be addressed before public deployment.
+
+**TODO before deployment:** Write a proper README.md for the project, including setup instructions, tech stack overview, and screenshots of the app (dashboard, journal entry, AI feedback panel, vocabulary book). Currently has only the placeholder `# AI English Journal` from Phase 1.
+
+A public repo with a one-line README signals abandonment and gives new contributors / users nothing to anchor on. This blocks Phase 10 (Deployment) — see the Phase 10 checklist in `docs/PROJECT_SPEC.md`.
+
+---
+
 ## 2026-06-20 — Fixed infinite redirect loop between middleware and dashboard
 
 **Phase:** 2 (Authentication)
