@@ -7,7 +7,7 @@
 The bilingual explanation is the project's central design choice. Existing journaling apps (Day One, Notion) offer no language feedback. Existing AI tutors (Duolingo, ChatGPT) are not journaling environments and explain in English only, which is the language the learner is still struggling with. The combined product — daily reflective writing plus an AI teacher who explains corrections in the learner's first language — is the gap this project fills.
 
 - **Live deployment:** https://vct-ai-english-journal.vercel.app/
-- **Repository:** this directory
+- **Repository:** https://github.com/HtetLin27/vct-ai-english-journal
 - **Demo account:** `demo.aiej@gmail.com` (pre-loaded with 7 days of entries, a 7-day streak, and saved vocabulary so every feature surface is non-empty for evaluation)
 - **Status:** Phases 1–9 complete, Phase 10 deployed and verified end-to-end. Residual pre-launch items tracked in `specs/DEPLOYMENT_CHECKLIST.md`.
 
@@ -58,7 +58,7 @@ Two skills were active in the project:
 I authored a custom subagent (`.claude/agents/test-writer.md`) that specializes in generating test cases for this project's endpoints. The subagent's instructions encode the project's testing conventions:
 
 - Outputs a **manual test checklist** matching `specs/REGRESSION_CHECKLIST.md` style (no test runner is installed yet, so executable Jest/Vitest code would have nowhere to run).
-- Reads the actual route file *and* the matching `API_SPEC.md` section, then cross-references them.
+- Reads the actual route file _and_ the matching `API_SPEC.md` section, then cross-references them.
 - Organizes output into required sections: happy path, validation errors, auth failures, ownership/cross-user, side effects, feature-specific edge cases, and **open questions** for spec/code drift it can't silently fix.
 
 **Demonstration: `POST /api/vocabulary`.** When asked to generate tests for the vocabulary save endpoint, the subagent produced ~30 specific test items and — more usefully — **caught nine concrete pieces of spec/code drift**:
@@ -74,28 +74,28 @@ This is the test-writer's most valuable output: **not the tests themselves, but 
 
 ### 4.1 Tech Stack
 
-| Layer | Technology |
-|---|---|
-| Frontend framework | Next.js 14 (App Router) |
-| Language | TypeScript |
-| Styling | Tailwind CSS v3 + shadcn/ui v2.1.0 (style `new-york`, brand-green overrides) |
-| Backend | Next.js API Routes (same repo) |
-| Database | PostgreSQL via Supabase |
-| Authentication | Supabase Auth (email + password) |
-| AI | Google Gemini API (`gemini-2.5-flash`) |
-| Hosting | Vercel |
+| Layer              | Technology                                                                   |
+| ------------------ | ---------------------------------------------------------------------------- |
+| Frontend framework | Next.js 14 (App Router)                                                      |
+| Language           | TypeScript                                                                   |
+| Styling            | Tailwind CSS v3 + shadcn/ui v2.1.0 (style `new-york`, brand-green overrides) |
+| Backend            | Next.js API Routes (same repo)                                               |
+| Database           | PostgreSQL via Supabase                                                      |
+| Authentication     | Supabase Auth (email + password)                                             |
+| AI                 | Google Gemini API (`gemini-2.5-flash`)                                       |
+| Hosting            | Vercel                                                                       |
 
 ### 4.2 Database Schema (5 tables)
 
 All tables in the `public` schema, with RLS enabled and policies scoped to `auth.uid() = user_id`.
 
-| Table | Purpose |
-|---|---|
-| `profiles` | 1-to-1 with `auth.users`. Holds `ai_enabled` boolean. |
-| `journal_entries` | Core table. `title`, `body`, `entry_date`, `mood` (CHECK constraint on 5 values), `tags text[]`, `word_count`. |
-| `ai_feedback` | Immutable per-entry AI results. `corrections` and `suggestions` JSONB arrays carrying bilingual English+Myanmar fields. |
-| `saved_words` | Personal vocabulary book. `UNIQUE (user_id, word)` to prevent duplicates. `definition_my` nullable for future non-AI sources. |
-| `writing_streaks` | Pre-computed dashboard stats (current/longest streak, total words/entries, last entry date). |
+| Table             | Purpose                                                                                                                       |
+| ----------------- | ----------------------------------------------------------------------------------------------------------------------------- |
+| `profiles`        | 1-to-1 with `auth.users`. Holds `ai_enabled` boolean.                                                                         |
+| `journal_entries` | Core table. `title`, `body`, `entry_date`, `mood` (CHECK constraint on 5 values), `tags text[]`, `word_count`.                |
+| `ai_feedback`     | Immutable per-entry AI results. `corrections` and `suggestions` JSONB arrays carrying bilingual English+Myanmar fields.       |
+| `saved_words`     | Personal vocabulary book. `UNIQUE (user_id, word)` to prevent duplicates. `definition_my` nullable for future non-AI sources. |
+| `writing_streaks` | Pre-computed dashboard stats (current/longest streak, total words/entries, last entry date).                                  |
 
 A signup trigger (`on_auth_user_created`, `SECURITY DEFINER`) auto-inserts the `profiles` and `writing_streaks` rows for every new `auth.users` row.
 
@@ -116,7 +116,7 @@ All routes use the standard envelope: `{ success: true, data, error: null }` on 
 - **Row Level Security as defense in depth.** Every table has `SELECT`/`INSERT`/`UPDATE`/`DELETE` policies tied to `auth.uid() = user_id`. The application layer already filters by user, but RLS is the second wall — a query that accidentally forgot `WHERE user_id` would still return zero other users' rows instead of leaking data.
 - **`requireUser()` helper across 9 API routes.** A small wrapper in `lib/supabase/auth-guard.ts` distinguishes "no JWT" (`AuthSessionMissingError` → HTTP 401) from "Supabase Auth endpoint is unreachable" (`AuthRetryableFetchError` → HTTP 503). Before this split, a regional/network outage to the Auth endpoint looked identical to a missing session, which sent me chasing auth bugs that didn't exist.
 - **404 over 403 for cross-user resources.** Documented in `SKILL.md` as a non-negotiable: never confirm that a resource exists when the caller isn't authorized to see it.
-- **AI gating before any external call.** Every `/api/ai/*` route checks `profiles.ai_enabled` *before* invoking Gemini, so a user who disables AI pays no API cost and shares no entry text with a third-party model.
+- **AI gating before any external call.** Every `/api/ai/*` route checks `profiles.ai_enabled` _before_ invoking Gemini, so a user who disables AI pays no API cost and shares no entry text with a third-party model.
 
 ---
 
@@ -126,7 +126,7 @@ These are not "I built a feature" stories — they are bugs and constraints that
 
 ### 5.1 Infinite Redirect Loop Between Middleware and Dashboard
 
-**Symptom.** After login, the app entered an infinite redirect loop between `/login` and `/dashboard`, manifested as React's *"Maximum update depth exceeded"* error.
+**Symptom.** After login, the app entered an infinite redirect loop between `/login` and `/dashboard`, manifested as React's _"Maximum update depth exceeded"_ error.
 
 **Root cause.** Two layers were each making authentication decisions: middleware (the intended source of truth) and the dashboard page itself (which had a redundant `getUser()` + `redirect("/login")` guard). A transient network blip to Supabase caused the page-level `getUser()` to fail (returning no user) while middleware still considered the JWT valid. The result:
 
@@ -149,7 +149,7 @@ These are not "I built a feature" stories — they are bugs and constraints that
 
 **Root cause.** The `writing_streaks` table had RLS enabled with `SELECT` and `INSERT` policies, but **no `UPDATE` policy**. The streak update in `POST /api/entries` ran under the user's session via the anon-key server client (not the service-role key), so RLS applied — and silently affected zero rows.
 
-The bug was almost philosophical: RLS is *supposed* to fail closed. The correct behavior for an unauthorized `UPDATE` is "affect zero rows, return no error." But because the operation was authorized in our intent (the user is updating their own row), the policy gap looked like a feature bug, not an auth bug.
+The bug was almost philosophical: RLS is _supposed_ to fail closed. The correct behavior for an unauthorized `UPDATE` is "affect zero rows, return no error." But because the operation was authorized in our intent (the user is updating their own row), the policy gap looked like a feature bug, not an auth bug.
 
 **Fix.** Added an explicit policy: `CREATE POLICY "Users can update own writing streak" ON public.writing_streaks FOR UPDATE USING (auth.uid() = user_id) WITH CHECK (auth.uid() = user_id);`
 
@@ -202,7 +202,7 @@ This checklist also surfaced the signup-flow bug that would have appeared the mo
 
 ### What Worked Well
 
-**Specs as the source of truth.** The largest single leverage point in this project was investing in written specifications *before* writing code. When Claude generated something that disagreed with the spec, the spec won — no debate. When I needed to make a decision mid-implementation, I'd update the spec first, then ask Claude to implement against the new version. This kept verbal decisions from getting lost between sessions.
+**Specs as the source of truth.** The largest single leverage point in this project was investing in written specifications _before_ writing code. When Claude generated something that disagreed with the spec, the spec won — no debate. When I needed to make a decision mid-implementation, I'd update the spec first, then ask Claude to implement against the new version. This kept verbal decisions from getting lost between sessions.
 
 **Push-back when a symptom didn't match the code.** Twice during the build, I asked Claude to investigate reported issues that turned out to have no actual code cause — most notably an "intermittent navigation failure" that the codebase couldn't have produced. Claude pushed back with a clear "I can't reproduce this from the code; here are likelier causes and what to check," rather than inventing a fix. This was more useful than a confident-but-wrong patch would have been.
 
@@ -216,7 +216,7 @@ This checklist also surfaced the signup-flow bug that would have appeared the mo
 
 **Working around the Gemini regional restriction.** The mock-mode approach worked, but it created a parallel code path that had to be maintained, tested, and then carefully removed. The discipline of physically deleting the mock branches before deployment (rather than just turning off the env flag) was right, but it cost an extra commit and added a deployment-checklist item that wouldn't have existed if Gemini had been reachable.
 
-**Trusting the AI vs. verifying it.** Claude is very good at sounding confident. The "intermittent navigation failure" was a moment where the right answer was "the code can't do that, please re-check your repro" rather than "let me find a fix." Building the habit of asking *why* Claude believed something — and pushing back when the answer didn't ground out in the codebase — was an ongoing discipline. The agent is a collaborator, not an oracle.
+**Trusting the AI vs. verifying it.** Claude is very good at sounding confident. The "intermittent navigation failure" was a moment where the right answer was "the code can't do that, please re-check your repro" rather than "let me find a fix." Building the habit of asking _why_ Claude believed something — and pushing back when the answer didn't ground out in the codebase — was an ongoing discipline. The agent is a collaborator, not an oracle.
 
 ### What I'd Do Differently Next Time
 
