@@ -74,19 +74,17 @@ export default async function ViewEntryPage({ params }: PageProps) {
 
   if (!entry) {
     return (
-      <main className="mx-auto max-w-3xl px-4 py-8">
-        <div className="py-16 text-center">
-          <p className="mb-4 text-lg font-semibold text-gray-900">
-            Entry not found.
-          </p>
-          <Link
-            href="/journal"
-            className="text-sm font-medium text-green-600 hover:underline"
-          >
-            ← Back to My Journal
-          </Link>
-        </div>
-      </main>
+      <div className="py-16 text-center">
+        <p className="mb-4 text-lg font-semibold text-gray-900">
+          Entry not found.
+        </p>
+        <Link
+          href="/journal"
+          className="text-sm font-medium text-green-600 hover:underline"
+        >
+          ← Back to My Journal
+        </Link>
+      </div>
     )
   }
 
@@ -94,7 +92,7 @@ export default async function ViewEntryPage({ params }: PageProps) {
   const tags = entry.tags ?? []
 
   return (
-    <main className="mx-auto max-w-3xl px-4 py-8">
+    <>
       <div className="mb-2">
         <Link
           href="/journal"
@@ -152,6 +150,6 @@ export default async function ViewEntryPage({ params }: PageProps) {
       </div>
 
       <AiFeedbackPanel entryId={entry.id} />
-    </main>
+    </>
   )
 }

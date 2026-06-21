@@ -98,7 +98,7 @@ export default function EditEntryPage() {
   }
 
   return (
-    <main className="mx-auto max-w-3xl px-4 py-8 pb-24 md:pb-8">
+    <>
       <div className="mb-2">
         <Link
           href={`/journal/${entryId}`}
@@ -134,7 +134,7 @@ export default function EditEntryPage() {
           onSubmit={handleUpdate}
         />
       )}
-    </main>
+    </>
   )
 }
 

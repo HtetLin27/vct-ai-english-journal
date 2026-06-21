@@ -72,7 +72,7 @@ export default function JournalListPage() {
   }, [])
 
   return (
-    <main className="mx-auto max-w-3xl px-4 py-8">
+    <>
       <div className="mb-6 flex items-center justify-between gap-4">
         <h1 className="text-3xl font-bold text-gray-900">My Journal</h1>
         <Button asChild className="bg-green-600 text-white hover:bg-green-700">
@@ -167,6 +167,6 @@ export default function JournalListPage() {
           </div>
         </>
       )}
-    </main>
+    </>
   )
 }

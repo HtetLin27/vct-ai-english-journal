@@ -2,7 +2,6 @@ import Link from "next/link"
 import { createServerClient } from "@/lib/supabase/server"
 import { StatsCard } from "@/components/dashboard/stats-card"
 import { JournalCard } from "@/components/journal/journal-card"
-import { LogoutButton } from "@/components/shared/logout-button"
 import { Button } from "@/components/ui/button"
 
 function getGreeting(date: Date): string {
@@ -51,17 +50,14 @@ export default async function DashboardPage() {
   const greeting = getGreeting(new Date())
 
   return (
-    <main className="mx-auto max-w-3xl px-4 py-8 pb-24 md:pb-8">
-      <div className="mb-8 flex items-start justify-between gap-4">
-        <div>
-          <h1 className="text-3xl font-bold text-gray-900">{greeting}</h1>
-          {!isFirstTime && (
-            <p className="mt-1 text-base text-gray-700">
-              Keep up your great work 🌱
-            </p>
-          )}
-        </div>
-        <LogoutButton />
+    <>
+      <div className="mb-8">
+        <h1 className="text-3xl font-bold text-gray-900">{greeting}</h1>
+        {!isFirstTime && (
+          <p className="mt-1 text-base text-gray-700">
+            Keep up your great work 🌱
+          </p>
+        )}
       </div>
 
       {isFirstTime ? (
@@ -134,6 +130,6 @@ export default async function DashboardPage() {
           </section>
         </>
       )}
-    </main>
+    </>
   )
 }

@@ -38,7 +38,7 @@ export default async function VocabularyPage() {
   }
 
   return (
-    <main className="mx-auto max-w-3xl px-4 py-8">
+    <>
       <h1 className="text-3xl font-bold text-gray-900">My Vocabulary Book</h1>
       <p className="mt-1 text-sm text-gray-500">
         {words.length} {words.length === 1 ? "word" : "words"} saved
@@ -78,6 +78,6 @@ export default async function VocabularyPage() {
           ))}
         </div>
       )}
-    </main>
+    </>
   )
 }
