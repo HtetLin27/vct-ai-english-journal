@@ -4,10 +4,11 @@ Manual end-to-end checklist for every user-facing flow built so far. Work throug
 
 **Test environment assumptions**
 - Dev server running at `http://localhost:3000`
-- `MOCK_AI_RESPONSES=true` in `.env.local` (AI returns hardcoded fixture)
 - A test account with at least 3 entries, 1 saved word, and a non-zero streak
 - A second test account (clean / empty) for empty-state checks
 - Test on a desktop browser **and** a real mobile viewport (DevTools responsive mode ≥ iPhone SE width is acceptable)
+
+> **AI feature testing (§4) now requires a live Gemini connection.** Mock mode has been removed, so the `/api/ai/feedback`, `/api/ai/guide`, and `/api/ai/draft` checks must be run either (a) locally with a working `GEMINI_API_KEY` and network reachability to Gemini, or (b) against the deployed production environment on Vercel. Response *content* will vary run-to-run with live Gemini — verify behavior (shape, states, error paths) rather than asserting on specific fixture text.
 
 ---
 
@@ -108,8 +109,8 @@ On `/journal/<id>` of an entry that has not yet been checked:
 
 - [ ] **Idle**: Green-50 panel with "✨ Check my English" button and the subtext "Get grammar feedback and vocabulary tips." Border is `border-green-200 rounded-xl`.
 - [ ] **Loading**: After clicking the button, the panel switches to "✨ Checking your English…" with an animated spinner and "This usually takes a few seconds." This state should be visibly distinct from idle.
-- [ ] **Loaded with corrections**: With mock mode on, the panel renders the 2 fixture corrections inside `CorrectionCard`s (red strikethrough original, green corrected with "→" prefix, English explanation with 💡, Myanmar explanation directly under it in softer gray). Below: "Vocabulary Suggestions (2 found)" with both fixture suggestions and a "Save" button on each. "↻ Refresh feedback" button at the bottom.
-- [ ] **Loaded with no corrections** (perfect entry): If you can't trigger this from the mock, verify the rendering logic by writing an entry, manually inserting an `ai_feedback` row with `corrections: []` and `suggestions: [...]`, then reloading — the panel should show the green ✅ "Great job! No grammar mistakes found. Your writing looks correct." message followed by the suggestions section.
+- [ ] **Loaded with corrections**: The panel renders an h2 "Your English Feedback" header, then a "Grammar Corrections (N found)" section with one `CorrectionCard` per correction (red strikethrough original, green corrected text with "→" prefix, English explanation prefixed by 💡, and a Myanmar explanation line directly under it in softer gray when present). When suggestions exist, a "Vocabulary Suggestions (N found)" section follows with one `SuggestionCard` per item (original → suggestion, English reason with 💬, Myanmar reason when present, and a "Save" button on `vocabulary`-type cards). A "↻ Refresh feedback" button sits at the bottom. Verify the *shape and styling* of whatever Gemini returns — the specific words, counts, and number of items will vary run-to-run.
+- [ ] **Loaded with no corrections** (perfect entry): Since live Gemini almost always finds *something* to correct, verify this branch deterministically by writing an entry, manually inserting an `ai_feedback` row with `corrections: []` and `suggestions: [...]`, then reloading — the panel should show the green ✅ "Great job! No grammar mistakes found. Your writing looks correct." message followed by the suggestions section.
 - [ ] **AI disabled**: With `ai_enabled = false` in `profiles`, clicking "Check my English" results in the green-50 panel reading "AI features are turned off. Go to Settings to enable them." with a Settings button that navigates to `/settings`. Network response is HTTP 403 with error `"AI features are disabled. Enable them in Settings."`
 - [ ] **Generic error**: Simulate by stopping the dev server mid-request or temporarily forcing a 500 — the panel switches to a red-50/red-200 alert with the API error message (or the fallback "We couldn't get feedback right now. Please try again.") and an "↻ Try again" button that re-issues the request.
 
@@ -131,7 +132,7 @@ On `/journal/<id>` of an entry that has not yet been checked:
 
 ### AI request constraints
 - [ ] Open the entry, click Check, inspect the Network tab. The POST body to `/api/ai/feedback` is exactly `{ entry_id: "<uuid>" }` — never the body content, never multiple entries.
-- [ ] Create an entry with > 6000 characters of body. Trigger feedback. The server truncates to 6000 chars (1500 tokens × 4) before sending to Gemini — verify the response still arrives (mock path bypasses this; with live Gemini, no error is thrown).
+- [ ] Create an entry with > 6000 characters of body. Trigger feedback. The server truncates to 6000 chars (1500 tokens × 4) before sending to Gemini — verify the response still arrives with no error.
 
 ---
 
