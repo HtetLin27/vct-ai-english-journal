@@ -24,88 +24,221 @@
 
 ## 1. Design Philosophy
 
-The app must feel **calm, clean, and encouraging**. Language learning is vulnerable work — users are putting imperfect writing in front of an AI judge. The UI should never feel clinical, graded, or pressured.
+The app must feel **calm, focused, and quietly distinctive**. Language learning is vulnerable work — users are putting imperfect writing in front of an AI judge. The UI should never feel clinical, graded, or pressured, but it should also not look like every other AI-wrapper SaaS. The visual language is grounded in the bilingual correction/teaching mechanic that defines this product.
 
 **Design principles:**
 
-- **Generous whitespace.** Give content room to breathe. Never crowd the screen.
-- **Green means growth.** Green is the primary brand color — it signals life, progress, and encouragement, not warnings.
-- **Friendly, not formal.** Rounded corners, soft shadows, warm gray tones. Avoid sharp edges and stark blacks.
-- **Feedback without shame.** Grammar corrections are shown as suggestions, not red marks. The AI is a teacher, not a judge.
-- **Mobile-first writing experience.** Many users will write on their phone. The textarea and save flow must feel natural at small sizes.
+- **Dark canvas, light content.** The page is a charcoal `#16181C` reading surface, not a generic white app shell. The user's writing is what glows on it.
+- **Margin / annotation as identity.** Corrections, suggestions, and Myanmar glosses live in a dedicated right-hand column separated by a 3px coral divider — the signature pattern of the app. The mechanic *is* the brand.
+- **Mint means growth, coral means attention.** Mint (`#5EE39B`) carries success, correction, and progress; coral (`#FF6B4A`) marks mistakes and the annotation divider. The pair is intentional — never use red for errors or amber for warnings.
+- **Bilingual is first-class, never an afterthought.** Myanmar glosses get their own warm color (`#C99A82`) so they sit visually beside — not below — the English. The script change carries the meaning; no flag icons, no "MY:" prefixes.
+- **Feedback without shame.** Grammar mistakes get a soft `#3D2218` background and a coral underline, not red strikethroughs in the original text. The AI is a teacher writing in the margin, not a judge marking up the page.
+- **Mobile-first writing experience.** Many users will write on their phone. The two-column annotation grid collapses to a single column with annotations inline directly after the content they describe — never hidden behind a tab or accordion.
 
 ---
 
 ## 2. Design System
 
+> **Supersedes the original light/green theme.** Early development called for a generic green-on-white SaaS palette with Inter. This section replaces it. The new direction is **dark mode, margin/annotation**: a charcoal canvas with mint and coral accents, paired with a Bricolage Grotesque + Manrope type system. The change is deliberate — we are moving away from the "AI-generated SaaS" aesthetic toward a look grounded in the bilingual correction/teaching mechanic that defines this product. Corrections, suggestions, and Myanmar glosses are the protagonists of the interface, not afterthoughts; the visual system is built around showcasing them.
+
 ### 2.1 Color Palette
 
-All colors map to Tailwind CSS utility classes for direct use with shadcn/ui.
+The app ships **dark-first** — there is no light theme. Hex values are authoritative. Tailwind utilities are written using arbitrary-value syntax (e.g. `bg-[#16181C]`) since these colors do not map to a default Tailwind palette; teams may register them as theme tokens (`bg-ink`, `bg-surface`, etc.) in `tailwind.config.ts` once components are built.
 
-#### Brand Green
+#### Surfaces & Borders
 
-| Token | Tailwind Class | Hex | Usage |
-|-------|---------------|-----|-------|
-| `green-50` | `bg-green-50` | `#f0fdf4` | Page section tints, AI panel background |
-| `green-100` | `bg-green-100` | `#dcfce7` | Selected state fills, streak badge bg |
-| `green-200` | `border-green-200` | `#bbf7d0` | Selected state borders |
-| `green-500` | `text-green-500` | `#22c55e` | Icons, active dots, inline accents |
-| `green-600` | `bg-green-600` | `#16a34a` | Primary buttons, links, key actions |
-| `green-700` | `bg-green-700` | `#15803d` | Primary button hover state |
-| `green-800` | `text-green-800` | `#166534` | Text on green-100 backgrounds |
+| Token | Hex | Usage |
+|-------|-----|-------|
+| `ink` | `#16181C` | Page background — the canvas behind every screen |
+| `surface` | `#1E2026` | Card / panel / input background — every elevated surface |
+| `surface-border` | `#2C2F38` | Default border on cards, inputs, dividers |
 
-#### Neutrals
+#### Text
 
-| Token | Tailwind Class | Hex | Usage |
-|-------|---------------|-----|-------|
-| `white` | `bg-white` | `#ffffff` | Card surfaces, input fields, panels |
-| `gray-50` | `bg-gray-50` | `#f9fafb` | App page background |
-| `gray-100` | `bg-gray-100` | `#f3f4f6` | Subtle section dividers, skeleton loaders |
-| `gray-200` | `border-gray-200` | `#e5e7eb` | Default borders, dividers |
-| `gray-400` | `text-gray-400` | `#9ca3af` | Decorative icons only (must be `aria-hidden`). Fails WCAG AA contrast for text on white (≈2.8:1) — do not use for any text users need to read |
-| `gray-500` | `text-gray-500` | `#6b7280` | Secondary text, metadata, captions, placeholder text, inactive nav labels, word counts |
-| `gray-700` | `text-gray-700` | `#374151` | Body text |
-| `gray-900` | `text-gray-900` | `#111827` | Headings, primary text |
+| Token | Hex | Usage |
+|-------|-----|-------|
+| `text-primary` | `#F2F3F5` | Headings, primary text, high-emphasis values |
+| `text-body` | `#D8DAE0` | Journal body, descriptions, paragraph copy (slightly softer than primary) |
+| `text-secondary` | `#8B8F98` | Secondary text, metadata, inactive nav labels |
+| `text-secondary-strong` | `#9A9DA6` | Slightly higher-contrast variant for small captions that need to stay legible on `surface` |
+| `text-muted` | `#6E7280` | Tertiary text, decorative icons, very low-emphasis labels |
+| `text-bilingual` | `#C99A82` | Myanmar / bilingual glosses — warm tone keeps them distinct from English secondary text without screaming |
 
-#### Semantic Colors
+#### Mint (Success / Correction Accent)
 
-| Purpose | Background | Text / Border | Tailwind |
-|---------|-----------|--------------|---------|
-| Error | `#fef2f2` | `#dc2626` | `bg-red-50 text-red-600 border-red-200` |
-| Warning | `#fffbeb` | `#d97706` | `bg-amber-50 text-amber-600 border-amber-200` |
-| Success | `#f0fdf4` | `#16a34a` | `bg-green-50 text-green-600 border-green-200` |
-| Info | `#eff6ff` | `#2563eb` | `bg-blue-50 text-blue-600 border-blue-200` |
+| Token | Hex | Usage |
+|-------|-----|-------|
+| `mint` | `#5EE39B` | Corrected text, success messaging, "CORRECTION" labels, mint-dot markers |
+| `mint-button` | `#3DDC84` | Primary button background — slightly punchier on dark |
+| `mint-button-text` | `#0A1A12` | Text/icon color on `mint-button` (dark green-black for AA contrast) |
+| `mood-bg` | `#1F3D2E` | Mood badge and "selected" pill background |
+| `mood-text` | `#5EE39B` | Text on `mood-bg` |
+
+#### Coral (Error / Highlight Accent)
+
+| Token | Hex | Usage |
+|-------|-----|-------|
+| `coral` | `#FF6B4A` | Mistake underlines, error text, the 3px divider in margin/annotation layouts |
+| `coral-soft` | `#FF8A6E` | "MISTAKE" labels and other small coral text where pure coral is too hot |
+| `mistake-bg` | `#3D2218` | Background highlight behind mistake words in the original entry text |
+
+#### Suggestion Card
+
+| Token | Hex | Usage |
+|-------|-----|-------|
+| `suggestion-bg` | `#142420` | Suggestion card background — dark green tint, distinct from `surface` |
+| `suggestion-border` | `#234032` | Suggestion card border |
+
+#### Semantic Mapping
+
+| Purpose | Background | Text | Border |
+|---------|-----------|------|--------|
+| Error | `#3D2218` (mistake-bg) | `#FF8A6E` (coral-soft) | `#FF6B4A` (coral) |
+| Success | `#1F3D2E` (mood-bg) | `#5EE39B` (mint) | `#234032` (suggestion-border) |
+| Info / neutral | `#1E2026` (surface) | `#D8DAE0` (text-body) | `#2C2F38` (surface-border) |
+
+There is intentionally no separate warning color: hierarchy is carried by the mint/coral pair plus the bilingual warm tone. If a future surface needs a warning state, derive it from `coral-soft` rather than introducing an amber.
 
 ---
 
 ### 2.2 Typography
 
-**Font family:** Inter (Google Fonts) — loaded via `<link>` in the root layout.
+Two web fonts, both from Google Fonts. No serifs — an earlier exploration of an editorial serif for headings was deliberately dropped in favor of the Bricolage Grotesque + Manrope sans pairing, which holds up better at the small sizes the margin/annotation layout demands.
+
+**Headings:** [Bricolage Grotesque](https://fonts.google.com/specimen/Bricolage+Grotesque), weight `600`.
+**Body & UI:** [Manrope](https://fonts.google.com/specimen/Manrope), weights `400` / `500` / `600`.
 
 ```css
-font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+/* Root */
+:root {
+  --font-display: 'Bricolage Grotesque', system-ui, sans-serif;
+  --font-body:    'Manrope', system-ui, -apple-system, 'Segoe UI', sans-serif;
+}
+
+h1, h2, h3, h4 { font-family: var(--font-display); font-weight: 600; }
+body            { font-family: var(--font-body);    font-weight: 400; }
 ```
 
 | Role | Tailwind | Size | Weight | Color | Usage |
 |------|---------|------|--------|-------|-------|
-| `h1` | `text-3xl font-bold` | 30px | 700 | `gray-900` | Page titles |
-| `h2` | `text-2xl font-semibold` | 24px | 600 | `gray-900` | Section headings |
-| `h3` | `text-xl font-semibold` | 20px | 600 | `gray-800` | Card titles, sub-sections |
-| `h4` | `text-base font-semibold` | 16px | 600 | `gray-800` | Labels, form group titles |
-| Body | `text-base font-normal` | 16px | 400 | `gray-700` | Journal body, descriptions |
-| Small | `text-sm font-normal` | 14px | 400 | `gray-500` | Metadata, captions, helper text |
-| Caption | `text-xs font-normal` | 12px | 400 | `gray-500` | Timestamps, word counts |
-| Link | `text-sm font-medium` | 14px | 500 | `green-600` | Inline links |
+| `h1` | `font-display text-3xl` | 30px | 600 | `text-primary` `#F2F3F5` | Page titles |
+| `h2` | `font-display text-2xl` | 24px | 600 | `text-primary` `#F2F3F5` | Section headings |
+| `h3` | `font-display text-xl` | 20px | 600 | `text-primary` `#F2F3F5` | Card titles, sub-sections |
+| `h4` | `font-display text-base` | 16px | 600 | `text-primary` `#F2F3F5` | Labels, form group titles |
+| Body | `font-body text-base` | 16px | 400 | `text-body` `#D8DAE0` | Journal body, descriptions |
+| Body emphasis | `font-body text-base` | 16px | 500 | `text-primary` `#F2F3F5` | Inline emphasis, corrected text |
+| Small | `font-body text-sm` | 14px | 400 | `text-secondary` `#8B8F98` | Metadata, helper text |
+| Caption | `font-body text-xs` | 12px | 400 | `text-muted` `#6E7280` | Timestamps, word counts |
+| Link | `font-body text-sm` | 14px | 500 | `mint` `#5EE39B` | Inline links |
+| Bilingual (Myanmar) | `font-body text-sm` | 14px | 400 | `text-bilingual` `#C99A82` | Myanmar glosses under English |
+| Annotation label | `font-display text-xs uppercase tracking-wider` | 11px | 600 | `coral-soft` or `mint` | "CORRECTION" / "SUGGESTION" tags in the margin |
 
-**Journal body text** uses a slightly increased line height for readability:
+**Journal body text** uses a slightly increased line height for readability and to give Myanmar combining marks vertical room:
 
 ```css
 .journal-body {
+  font-family: var(--font-body);
   font-size: 16px;
-  line-height: 1.75;   /* leading-7 */
-  color: #374151;       /* gray-700 */
+  line-height: 1.75;     /* leading-7 */
+  color: #D8DAE0;        /* text-body */
 }
 ```
+
+---
+
+### 2.3 Signature Layout — Margin / Annotation System
+
+The single most distinctive pattern in this redesign. Anywhere AI corrections, suggestions, or bilingual explanations live alongside user content (journal entry view, AI feedback panel, future read-along views), the page uses a **two-column annotation grid** instead of stacking content above feedback.
+
+**Grid (desktop, `md+`):**
+
+```
+┌──────────────────────────────────────────┐
+│  CONTENT (1.3fr)  │  •  │  ANNOTATIONS   │
+│                   │  •  │  (1fr)         │
+│   today I went    │  •  │  CORRECTION    │
+│   to the [market] │  •  │  went → went   │
+│   and buy some    │  •  │  to the market │
+│   [vegetable].    │  •  │  ...           │
+│                   │  •  │                │
+│                   │  •  │  SUGGESTION    │
+│                   │  •  │  vegetable →   │
+│                   │  •  │  vegetables    │
+└──────────────────────────────────────────┘
+```
+
+```css
+.annotation-grid {
+  display: grid;
+  grid-template-columns: 1.3fr 3px 1fr;
+  gap: 24px;
+  align-items: start;
+}
+```
+
+**The divider (the 3px middle column):**
+- Default: solid `#FF6B4A` (coral) bar running the full height of the grid
+- Section dividers (when the grid spans long sections): linear gradient `linear-gradient(180deg, #5EE39B 0%, #FF6B4A 100%)` — mint at the top, coral at the bottom
+- Never softer than 3px — the bar is a deliberate compositional element, not a hairline
+
+**Highlights in the content column:**
+- Mistake words get `background: #3D2218; border-bottom: 2px solid #FF6B4A; padding: 0 2px; border-radius: 2px;` — never plain red text
+- The underline is the affordance; the background tint is the discovery cue
+- On hover (desktop) or tap (mobile), the matching annotation in the right column gets a `#FF6B4A` left-border highlight so the pair is unambiguous
+
+**Annotation cards in the right column:**
+- Each annotation is a `surface` card with a small colored dot (6px) + uppercase label in the corner
+- **Corrections:** dot `#FF6B4A`, label `CORRECTION` in `coral-soft #FF8A6E`. Body shows original text with `line-through` in `text-muted #6E7280`, then `→` in coral, then corrected text in `mint #5EE39B`
+- **Suggestions:** card uses `suggestion-bg #142420` with `suggestion-border #234032`, a 💡 lightbulb glyph in `mint`, and `SUGGESTION` label in `mint`
+- Both card variants include the English explanation followed by the Myanmar gloss in `text-bilingual #C99A82` — no icon, no prefix, the script change does the work
+
+**Mobile (`< md`) collapse rule:**
+- The two-column grid collapses to a single column
+- Annotations appear **directly below** the content they relate to — never moved to a separate tab, accordion, or modal
+- The mistake highlight (background + underline) stays in the content; the annotation card slots in immediately after the paragraph that contains the mistake
+- The 3px coral divider becomes a horizontal 2px bar above each annotation cluster, preserving the mint→coral gradient on section breaks
+
+This pattern applies to **every page**, not just the journal entry view. The dashboard uses it for AI tips next to the streak card; the journal list uses it for filter summaries beside entry groups; vocabulary cards mirror it for the English/Myanmar definition pairing; settings uses it for explanatory copy beside each toggle; auth pages use a single annotation in the right column ("Your entries stay private" etc.) as a brand reinforcement.
+
+---
+
+### 2.4 Spacing Scale
+
+Base unit: `4px` (Tailwind's default). Use multiples consistently.
+
+| Name | Tailwind | Value | Usage |
+|------|---------|-------|-------|
+| xs | `p-1` / `gap-1` | 4px | Tight icon padding, badge inner |
+| sm | `p-2` / `gap-2` | 8px | Button padding (y), tag gaps |
+| md | `p-4` / `gap-4` | 16px | Card padding, form field gaps |
+| lg | `p-6` / `gap-6` | 24px | Annotation grid gap, card outer padding |
+| xl | `p-8` / `gap-8` | 32px | Page section vertical spacing |
+| 2xl | `p-12` / `gap-12` | 48px | Major page section breaks |
+
+---
+
+### 2.5 Border Radius Scale
+
+| Name | Tailwind | Value | Usage |
+|------|---------|-------|-------|
+| sm | `rounded` | 4px | Small badges, mistake highlight rounding |
+| md | `rounded-lg` | 8px | Input fields, buttons, annotation cards |
+| lg | `rounded-xl` | 12px | Cards, panels, surface containers |
+| xl | `rounded-2xl` | 16px | Modals, large surfaces |
+| full | `rounded-full` | 9999px | Mood pills, avatar, streak badge |
+
+---
+
+### 2.6 Elevation
+
+There are no traditional drop shadows on dark — they read as muddy halos. Elevation is expressed through **surface lightness plus border**.
+
+| Level | Treatment | Usage |
+|-------|-----------|-------|
+| flat | `bg-ink` (no border) | Page canvas |
+| raised | `bg-surface` + `border border-surface-border` | Cards, panels at rest |
+| floating | `bg-surface` + `border border-surface-border` + `shadow-[0_8px_24px_rgba(0,0,0,0.45)]` | Modals, popovers, the AI feedback panel when expanded over content |
+| highlight | `bg-surface` + `border border-coral` | Cards in an error or attention state |
 
 ---
 
@@ -156,20 +289,20 @@ Two layout groups, matching the Next.js App Router structure:
 **Auth layout** (`app/(auth)/layout.tsx`) — Login and Signup:
 - Full-screen centered layout
 - No navigation header or sidebar
-- Soft gray-50 background
-- Content card is centered vertically and horizontally
+- `ink` `#16181C` page background
+- Content card is centered vertically and horizontally on a `surface` `#1E2026` card
 
 **App layout** (`app/(app)/layout.tsx`) — all protected pages:
-- Top navigation bar (fixed, white, border-bottom)
+- Top navigation bar (fixed, `bg-ink #16181C`, `border-b border-surface-border #2C2F38`)
 - Main content area with `max-w-3xl mx-auto px-4` container
-- Bottom navigation bar on mobile (fixed, white, border-top)
-- Page background: `gray-50`
+- Bottom navigation bar on mobile (fixed, `bg-ink`, `border-t border-surface-border`)
+- Page background: `ink` `#16181C`
 
 ---
 
 ### 3.2 Top Navigation Bar (Desktop)
 
-Height: `64px`. White background (`bg-white`), bottom border (`border-b border-gray-200`), `shadow-sm`.
+Height: `64px`. `bg-ink #16181C` background, `border-b border-surface-border #2C2F38`. No drop shadow — elevation is carried by the border.
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
@@ -180,19 +313,19 @@ Height: `64px`. White background (`bg-white`), bottom border (`border-b border-g
 
 | Slot | Content |
 |------|---------|
-| Left | Logo mark (leaf icon, green-600) + app name in `font-semibold text-gray-900` |
+| Left | Logo mark (leaf icon, `mint #5EE39B`) + app name in `font-display font-semibold text-primary #F2F3F5` |
 | Center | Navigation links: Dashboard, Journal, Vocabulary |
 | Right | Settings icon button + user email (truncated) |
 
-**Active nav link style:** `text-green-600 font-medium` with a `border-b-2 border-green-600` underline indicator.
+**Active nav link style:** `text-mint #5EE39B font-medium` with a `border-b-2 border-mint` underline indicator.
 
-**Inactive nav link style:** `text-gray-500 hover:text-gray-900`.
+**Inactive nav link style:** `text-secondary #8B8F98 hover:text-primary #F2F3F5`.
 
 ---
 
 ### 3.3 Bottom Navigation Bar (Mobile only, hidden on md+)
 
-Height: `64px`. Fixed to bottom. White background, top border.
+Height: `64px`. Fixed to bottom. `bg-ink #16181C` background, `border-t border-surface-border #2C2F38`.
 
 | Icon | Label | Route |
 |------|-------|-------|
@@ -201,7 +334,7 @@ Height: `64px`. Fixed to bottom. White background, top border.
 | `BookMarked` | Words | `/vocabulary` |
 | `Settings` | Settings | `/settings` |
 
-Active icon: `text-green-600`. Inactive: `text-gray-400`.
+Active icon: `text-mint #5EE39B`. Inactive: `text-muted #6E7280`.
 
 ---
 
@@ -225,7 +358,7 @@ All main content is wrapped in:
 
 **Purpose:** Allow existing users to sign in with email and password.
 
-**Layout:** Centered card on full-screen gray-50 background.
+**Layout:** Centered `surface` card on full-screen `ink #16181C` background. Uses the margin/annotation pattern (Section 2.3) at `md+`: the form on the left, a single quiet annotation in the right column reinforcing the brand promise (e.g. "Your entries stay private.") separated by the 3px coral divider. On mobile this collapses to a single column with the annotation below the card.
 
 ```
 ┌──────────────────────────────────────────┐
@@ -252,14 +385,14 @@ All main content is wrapped in:
 
 **Components:**
 - Logo mark + app name (centered above card)
-- shadcn/ui `Card` (`rounded-xl shadow-sm`, max-width `400px`)
-- `CardHeader`: heading "Welcome back", subtext "Sign in to continue writing"
-- shadcn/ui `Input` for email (`type="email"`, placeholder `you@example.com`)
-- shadcn/ui `Input` for password (`type="password"`)
-- shadcn/ui `Button` (full-width, `bg-green-600 hover:bg-green-700`) — "Log In"
-- Signup link: `text-sm text-green-600 hover:underline`
+- shadcn/ui `Card` (`bg-surface border border-surface-border rounded-xl`, max-width `400px`) — no shadow at rest
+- `CardHeader`: heading "Welcome back" in `font-display text-primary`, subtext "Sign in to continue writing" in `text-secondary`
+- shadcn/ui `Input` for email (`type="email"`, placeholder `you@example.com`, `bg-ink border-surface-border text-primary placeholder:text-muted`)
+- shadcn/ui `Input` for password (`type="password"`, same styling)
+- shadcn/ui `Button` (full-width, `bg-[#3DDC84] hover:bg-mint text-[#0A1A12]`) — "Log In"
+- Signup link: `text-sm text-mint hover:underline`
 
-**Error state:** Inline below the button inside a red-50 `Alert` component:
+**Error state:** Inline below the button inside an `Alert` styled with `bg-mistake-bg #3D2218 border border-coral text-coral-soft #FF8A6E`:
 ```
 ⚠  Invalid email or password. Please try again.
 ```
@@ -276,18 +409,18 @@ All main content is wrapped in:
 
 **Components:**
 - Heading: "Create your account", subtext: "Start your English writing journey"
-- Email input
+- Email input (same `bg-ink border-surface-border` styling as Login)
 - Password input (placeholder: "At least 8 characters")
 - Confirm Password input
-- "Create Account" button (full-width, green-600)
-- Login link: "Already have an account? Log in →"
+- "Create Account" button (full-width, `bg-[#3DDC84] hover:bg-mint text-[#0A1A12]`)
+- Login link: `text-mint` "Already have an account? Log in →"
 
 **Error states:**
-- Passwords do not match → red `Alert` below confirm field
-- Email already registered → red `Alert` below button
-- Weak password → red `Alert` below button
+- Passwords do not match → coral `Alert` (`bg-mistake-bg border border-coral text-coral-soft`) below confirm field
+- Email already registered → coral `Alert` below button
+- Weak password → coral `Alert` below button
 
-**Success state:** Brief green `Alert` — "Account created! Redirecting…" then redirect to `/dashboard`.
+**Success state:** Brief mint `Alert` (`bg-mood-bg #1F3D2E border border-suggestion-border text-mint`) — "Account created! Redirecting…" then redirect to `/dashboard`.
 
 ---
 
@@ -322,12 +455,14 @@ All main content is wrapped in:
 ```
 
 **Components:**
-- `GreetingBanner`: "Good morning!" (time-based greeting) + motivational sub-line
+- `GreetingBanner`: "Good morning!" (time-based greeting, `font-display text-primary`) + motivational sub-line in `text-body`
 - 3× `StatsCard`: streak (with 🔥), total words (✍), total entries (📓)
-- Primary CTA `Button` (full-width on mobile, auto-width on desktop): "✏ Write Today's Entry" → `/journal/new`
-- "Recent Entries" section heading
+- Primary CTA `Button` (full-width on mobile, auto-width on desktop, `bg-[#3DDC84] hover:bg-mint text-[#0A1A12]`): "✏ Write Today's Entry" → `/journal/new`
+- "Recent Entries" section heading in `font-display text-primary`
 - 3× `JournalCard` (compact variant, no body preview)
-- "View all entries →" link to `/journal`
+- "View all entries →" link to `/journal` in `text-mint`
+
+The dashboard also uses the **margin/annotation grid** (Section 2.3) at `md+`: the stats + CTA + recent entries sit in the content column; the right column holds a single AI tip annotation card (e.g. "Yesterday you used 'although' twice — great connector!") with a mint dot and `TIP` label. On mobile the annotation drops in directly below the stats row.
 
 **Empty state** (new user, no entries yet):
 
@@ -342,7 +477,7 @@ All main content is wrapped in:
 └─────────────────────────────────────────────────────┘
 ```
 
-**Loading state:** Three `StatsCard` skeletons (gray-100 animated pulse) + three `JournalCard` skeletons.
+**Loading state:** Three `StatsCard` skeletons (`bg-surface` animated pulse with `surface-border`) + three `JournalCard` skeletons.
 
 ---
 
@@ -373,12 +508,14 @@ All main content is wrapped in:
 ```
 
 **Components:**
-- Page heading "My Journal" + `Button` "✏ New Entry" (green-600, top right)
-- `SearchBar` (full-width, with magnifying glass icon, calls `/api/entries/search`)
+- Page heading "My Journal" in `font-display text-primary` + `Button` "✏ New Entry" (`bg-[#3DDC84] hover:bg-mint text-[#0A1A12]`, top right)
+- `SearchBar` (full-width, with magnifying glass icon in `text-muted`, calls `/api/entries/search`)
 - Filter row: `MoodFilter` (dropdown), `DateRangePicker` (popover with two date inputs), `TagFilter` (dropdown)
-- Entry count label (`text-sm text-gray-500`)
+- Entry count label (`text-sm text-secondary`)
 - Scrollable list of `JournalCard` (full variant with mood, tags, word count)
 - Each card is fully clickable (navigates to `/journal/[id]`)
+
+The journal list applies the **margin/annotation grid** at `md+`: cards in the content column, and an annotation in the right column summarizing the active filter set ("3 entries match · mood: happy") above a coral divider, then a short tip annotation below. On mobile the annotation appears as a single inline strip above the card list.
 
 **Empty state (no entries):**
 
@@ -396,9 +533,9 @@ Try different keywords or clear the filters.
 [ Clear Filters ]
 ```
 
-**Loading state:** 5× `JournalCard` skeleton placeholders (animated gray-100 pulse).
+**Loading state:** 5× `JournalCard` skeleton placeholders (animated `bg-surface` pulse with `surface-border`).
 
-**Error state:** Red `Alert` — "Could not load entries. Please refresh the page."
+**Error state:** Coral `Alert` (`bg-mistake-bg border border-coral text-coral-soft`) — "Could not load entries. Please refresh the page."
 
 ---
 
@@ -437,20 +574,20 @@ Try different keywords or clear the filters.
 ```
 
 **Components:**
-- Back link (`← Back` to `/journal`, `text-sm text-gray-500 hover:text-gray-900`)
-- Page heading "New Journal Entry"
+- Back link (`← Back` to `/journal`, `text-sm text-secondary hover:text-primary`)
+- Page heading "New Journal Entry" in `font-display text-primary`
 - `DatePicker` (shadcn/ui Popover + Calendar, defaults to today)
-- Title `Input` (placeholder: "Give your entry a title…")
+- Title `Input` (placeholder: "Give your entry a title…", `bg-ink border-surface-border text-primary placeholder:text-muted`)
 - `MoodSelector` (5 pill buttons — see Section 6)
 - `TagInput` (tag pills with ×, Enter-to-add)
-- Body `Textarea` (min-height `240px` on desktop, `180px` on mobile; placeholder: "Write about your day…"; `leading-relaxed`)
-- Guided questions trigger link (below textarea): `💡 Not sure what to write? Get writing prompts →` — `text-sm text-green-600`
+- Body `Textarea` (min-height `240px` on desktop, `180px` on mobile; placeholder: "Write about your day…"; `leading-relaxed`; `bg-ink border-surface-border text-body`)
+- Guided questions trigger link (below textarea): `💡 Not sure what to write? Get writing prompts →` — `text-sm text-mint`
 - `GuidedQuestionsPanel` (hidden by default — see Section 7)
-- "Save Entry" `Button` (green-600) + "Cancel" `Button` (ghost/outline)
+- "Save Entry" `Button` (`bg-[#3DDC84] hover:bg-mint text-[#0A1A12]`) + "Cancel" `Button` (ghost — `text-secondary hover:text-primary hover:bg-surface`)
 
 **Validation errors** (shown inline beneath each field):
-- Empty title → `text-sm text-red-600` "Title is required"
-- Empty body → `text-sm text-red-600` "Please write something in your entry"
+- Empty title → `text-sm text-coral-soft #FF8A6E` "Title is required"
+- Empty body → `text-sm text-coral-soft #FF8A6E` "Please write something in your entry"
 
 **Loading state (saving):** "Save Entry" button shows "Saving…" and is disabled.
 
@@ -489,19 +626,21 @@ Try different keywords or clear the filters.
 ```
 
 **Components:**
-- Back link (`← My Journal`)
-- Entry title (`text-3xl font-bold text-gray-900`)
-- Meta row: date, mood badge, word count (`text-sm text-gray-500`, separated by `·`)
-- Tag badges (small `rounded-full bg-green-100 text-green-800 text-xs px-2 py-0.5`)
-- Divider (`<hr class="border-gray-200">`)
-- Body text (`.journal-body` — see typography)
-- Action bar: "✏ Edit" `Button` (outline), "🗑 Delete" `Button` (outline, red text), "✨ Check my English" `Button` (green-600)
-- `AiFeedbackPanel` (see Section 7)
-- Delete confirmation `AlertDialog` (shadcn/ui AlertDialog — "Are you sure? This cannot be undone.")
+- Back link (`← My Journal`, `text-secondary hover:text-primary`)
+- Entry title (`font-display text-3xl font-semibold text-primary #F2F3F5`)
+- Meta row: date, mood badge, word count (`text-sm text-secondary`, separated by `·`)
+- Tag badges (small `rounded-full bg-mood-bg #1F3D2E text-mood-text #5EE39B text-xs px-2 py-0.5`)
+- Divider (`<hr class="border-surface-border">`) — or, between sections, the mint-to-coral gradient divider from Section 2.3
+- Body text (`.journal-body` — see typography). Mistake words use the highlight pattern from Section 2.3 (`bg-mistake-bg` + `border-b-2 border-coral`), not plain colored text.
+- Action bar: "✏ Edit" `Button` (outline — `border-surface-border text-primary hover:bg-surface`), "🗑 Delete" `Button` (outline, `text-coral-soft border-surface-border hover:bg-mistake-bg`), "✨ Check my English" `Button` (`bg-[#3DDC84] hover:bg-mint text-[#0A1A12]`)
+- `AiFeedbackPanel` (see Section 7) — this is where the margin/annotation grid is most fully expressed
+- Delete confirmation `AlertDialog` (shadcn/ui AlertDialog on `bg-surface`, "Are you sure? This cannot be undone.")
 
-**Loading state (initial page load):** Title and body show skeleton bars.
+This is the **signature page** for the margin/annotation pattern. The entry body lives in the content column; corrections and suggestions render as annotation cards in the right column, paired with the highlighted mistakes via hover/tap. See Section 7 for the full specification.
 
-**Error state:** "Entry not found." with link back to `/journal`.
+**Loading state (initial page load):** Title and body show `bg-surface` skeleton bars.
+
+**Error state:** "Entry not found." in `text-secondary` with link back to `/journal` in `text-mint`.
 
 ---
 
@@ -514,7 +653,7 @@ Try different keywords or clear the filters.
 **Differences from New Entry:**
 - Page heading: "Edit Entry" (not "New Journal Entry")
 - Form pre-filled with: title, body, entry_date, mood, tags
-- Buttons: "Save Changes" (green-600) + "Cancel" (ghost, navigates back to `/journal/[id]`)
+- Buttons: "Save Changes" (`bg-[#3DDC84] hover:bg-mint text-[#0A1A12]`) + "Cancel" (ghost — `text-secondary hover:text-primary hover:bg-surface`, navigates back to `/journal/[id]`)
 - No guided questions trigger (body is already written)
 
 **Loading state (fetching entry data):** All input fields show skeleton placeholders while fetching.
@@ -549,12 +688,12 @@ Try different keywords or clear the filters.
 ```
 
 **Components:**
-- Page heading "My Vocabulary Book"
-- Word count label (`text-sm text-gray-500`)
+- Page heading "My Vocabulary Book" in `font-display text-primary`
+- Word count label (`text-sm text-secondary`)
 - `SearchBar` (searches word and definition via `q` query param)
 - 2-column grid on desktop (`grid grid-cols-1 md:grid-cols-2 gap-4`), 1-column on mobile
-- `WordCard` for each saved word (see Section 5)
-- Delete confirmation is inline on the card (single click, with a brief "Deleted" toast notification — no full modal needed for a word)
+- `WordCard` for each saved word (see Section 5) — each card uses a mini margin/annotation pattern internally: English definition in the content area, Myanmar definition (`text-bilingual #C99A82`) directly under it
+- Delete confirmation is inline on the card (single click, with a brief "Deleted" toast notification on `bg-surface border border-surface-border text-primary` — no full modal needed for a word)
 
 **Empty state (no words saved):**
 
@@ -605,18 +744,19 @@ new words here to study later.
 ```
 
 **Components:**
-- Page heading "Settings"
-- "AI Features" `Card`:
-  - Row with label ("AI English Teacher"), description (`text-sm text-gray-500`), and shadcn/ui `Switch`
-  - Helper text below: explains what happens when AI is turned off
-  - Toggle updates immediately via `PUT /api/settings` on change; brief "Saved" toast on success
-- "Account" `Card`:
-  - User email (`text-sm text-gray-700`)
-  - "Log Out" `Button` (outline) — calls `supabase.auth.signOut()` then redirects to `/login`
+- Page heading "Settings" in `font-display text-primary`
+- "AI Features" `Card` (`bg-surface border border-surface-border rounded-xl`):
+  - Row with label ("AI English Teacher" in `text-primary font-medium`), description (`text-sm text-secondary`), and shadcn/ui `Switch` (`data-[state=checked]:bg-mint`, thumb `bg-[#0A1A12]`)
+  - Helper text below: explains what happens when AI is turned off (`text-sm text-secondary`)
+  - Toggle updates immediately via `PUT /api/settings` on change; brief "Saved" toast on success (`bg-mood-bg border-suggestion-border text-mint`)
+  - Explanatory copy lives in the right-hand annotation column at `md+` using the margin/annotation pattern, not stacked below
+- "Account" `Card` (`bg-surface border border-surface-border rounded-xl`):
+  - User email (`text-sm text-body`)
+  - "Log Out" `Button` (outline — `border-surface-border text-primary hover:bg-mistake-bg hover:text-coral-soft hover:border-coral`) — calls `supabase.auth.signOut()` then redirects to `/login`
 
 **Loading state:** Switch shows in a disabled/loading state while fetching current setting.
 
-**Error state (toggle fails):** Switch reverts to previous value; red `Alert` — "Could not save settings. Please try again."
+**Error state (toggle fails):** Switch reverts to previous value; coral `Alert` (`bg-mistake-bg border border-coral text-coral-soft`) — "Could not save settings. Please try again."
 
 ---
 
@@ -647,11 +787,12 @@ new words here to study later.
 ```
 
 **Visual design:**
-- White card, `rounded-xl shadow-sm border border-gray-200`
-- Hover: `hover:shadow-md hover:border-green-200 transition-shadow`
+- `bg-surface #1E2026 rounded-xl border border-surface-border #2C2F38`
+- Hover: `hover:border-mint/40 hover:bg-[#22252C] transition-colors` — no shadow, the border lift carries elevation
 - Entire card is a `<Link>` to `/journal/[id]`
-- Right side: chevron icon `→` in `gray-400`
-- Bottom row: tags as small green-100 pills; word count in `text-xs text-gray-400`
+- Right side: chevron icon `→` in `text-muted #6E7280`
+- Title in `font-display text-primary`; date in `text-sm text-secondary`
+- Bottom row: tags as small `rounded-full bg-mood-bg #1F3D2E text-mood-text #5EE39B` pills; word count in `text-xs text-muted`
 
 **Where used:** `JournalList`, Dashboard recent entries section.
 
@@ -691,9 +832,9 @@ See full visual specification in Section 6.
 ```
 
 **Visual design:**
-- Flex-wrap container with gray-100 border
-- Existing tags: green-100 pill with word + `×` button
-- Active input field embedded in the same row
+- Flex-wrap container with `bg-ink border border-surface-border rounded-lg`
+- Existing tags: `bg-mood-bg #1F3D2E text-mood-text #5EE39B` pill with word + `×` button (`text-mood-text hover:text-coral-soft`)
+- Active input field embedded in the same row, `bg-transparent text-primary placeholder:text-muted`
 - Placeholder: "Add a tag…" (disappears when tags exist)
 
 **Where used:** New Entry page, Edit Entry page.
@@ -715,9 +856,10 @@ See full visual specification in Section 6.
 ```
 
 **Visual design:**
-- Full-width input with magnifying glass icon on the left (Lucide `Search`, `text-gray-400`)
-- Clear button (Lucide `X`) appears when value is non-empty
-- `rounded-lg border border-gray-200 bg-white`
+- Full-width input with magnifying glass icon on the left (Lucide `Search`, `text-muted #6E7280`)
+- Clear button (Lucide `X`, `text-muted hover:text-primary`) appears when value is non-empty
+- `rounded-lg border border-surface-border bg-ink text-primary placeholder:text-muted`
+- Focus state: `focus:border-mint focus:ring-1 focus:ring-mint/40`
 
 **Where used:** Journal List page, Vocabulary page.
 
@@ -801,13 +943,13 @@ The parent (`AiFeedbackPanel`) closes over the full suggestion when wiring `onSa
 ```
 
 **Visual design:**
-- White card, `rounded-xl border border-gray-200 shadow-sm p-4`
-- Word: `text-lg font-semibold text-gray-900`
-- English definition: `text-sm text-gray-600`
-- Myanmar definition (when present): `text-sm text-gray-500` on the line directly under the English definition, with `mt-0.5` for a tight pair. No icon, no label prefix — the script change is enough to signal language.
-- Horizontal divider
-- Example sentence in italics: `text-sm text-gray-500 italic`
-- Delete button: small icon button (Lucide `Trash2`, `text-red-400 hover:text-red-600`) pinned to bottom-right
+- `bg-surface #1E2026 rounded-xl border border-surface-border #2C2F38 p-4`
+- Word: `font-display text-lg font-semibold text-primary #F2F3F5`
+- English definition: `text-sm text-body #D8DAE0`
+- Myanmar definition (when present): `text-sm text-bilingual #C99A82` on the line directly under the English definition, with `mt-0.5` for a tight pair. No icon, no label prefix — the script change plus the warm tone are enough to signal language.
+- Horizontal divider: `border-surface-border`
+- Example sentence in italics: `text-sm text-secondary #8B8F98 italic`
+- Delete button: small icon button (Lucide `Trash2`, `text-muted hover:text-coral`) pinned to bottom-right
 
 When `definition_my` is missing, render the English definition alone — the divider and example sentence flow up naturally with no gap.
 
@@ -830,10 +972,10 @@ When `definition_my` is missing, render the English definition alone — the div
 ```
 
 **Visual design:**
-- White card, `rounded-xl border border-gray-200 shadow-sm`
-- Large centered value: `text-3xl font-bold text-gray-900`
-- Label below: `text-sm text-gray-500`
-- Icon above: emoji or Lucide icon at `text-2xl`
+- `bg-surface #1E2026 rounded-xl border border-surface-border #2C2F38`
+- Large centered value: `font-display text-3xl font-semibold text-primary #F2F3F5`
+- Label below: `text-sm text-secondary #8B8F98`
+- Icon above: emoji or Lucide icon at `text-2xl`, Lucide icons in `text-mint #5EE39B`
 
 **Where used:** Dashboard page.
 
@@ -852,7 +994,7 @@ When `definition_my` is missing, render the English definition alone — the div
 }
 ```
 
-**Visual design:** Tailwind `animate-spin` circle with `border-green-500 border-t-transparent`.
+**Visual design:** Tailwind `animate-spin` circle with `border-mint #5EE39B border-t-transparent`.
 
 **Where used:** Any async loading state where a skeleton is not used.
 
@@ -873,7 +1015,7 @@ When `definition_my` is missing, render the English definition alone — the div
 }
 ```
 
-**Visual design:** Vertically centered, `text-center py-16`, muted colors.
+**Visual design:** Vertically centered, `text-center py-16`. Title in `font-display text-primary`, description in `text-secondary`, optional action button in the primary mint style.
 
 **Where used:** Journal list, Vocabulary page, Dashboard (new user).
 
@@ -916,26 +1058,28 @@ Each mood is a `<button>` styled as a pill:
 
 **Default (unselected) state:**
 ```css
-background: white;
-border: 1px solid #e5e7eb;   /* gray-200 */
+background: #1E2026;          /* surface */
+border: 1px solid #2C2F38;    /* surface-border */
 border-radius: 9999px;        /* rounded-full */
 padding: 8px 16px;
-color: #6b7280;               /* gray-500 */
+color: #8B8F98;               /* text-secondary */
+font-family: var(--font-body);
 font-size: 14px;
 ```
 
 **Selected state:**
 ```css
-background: #dcfce7;          /* green-100 */
-border: 2px solid #16a34a;   /* green-600 */
-color: #166534;               /* green-800 */
+background: #1F3D2E;          /* mood-bg */
+border: 2px solid #5EE39B;    /* mint */
+color: #5EE39B;               /* mood-text / mint */
 font-weight: 500;
 ```
 
 **Hover (unselected) state:**
 ```css
-background: #f9fafb;          /* gray-50 */
-border-color: #9ca3af;        /* gray-400 */
+background: #22252C;          /* surface, slightly lighter */
+border-color: #6E7280;        /* text-muted */
+color: #D8DAE0;               /* text-body */
 ```
 
 ### 6.3 Layout
@@ -956,7 +1100,7 @@ On the View Entry page and JournalCard, mood is shown as a read-only badge:
 😊 happy
 ```
 
-Style: `inline-flex items-center gap-1 text-sm text-gray-600`.
+Style: `inline-flex items-center gap-1 text-sm text-body #D8DAE0`. When rendered as a badge on a `JournalCard`, use the pill variant: `bg-mood-bg text-mood-text rounded-full px-2 py-0.5 text-xs`.
 
 ---
 
@@ -970,7 +1114,9 @@ The AI Feedback Panel is the UI home of the AI English teacher. It appears in tw
 
 ### 7.1 Feedback Panel — Entry View
 
-The panel lives below the entry action bar. It starts collapsed (idle state).
+On the View Entry page, the feedback panel is **not a separate stacked panel below the body** the way the old spec described — it *is* the right column of the margin/annotation grid defined in Section 2.3. The user's entry body lives in the content column; corrections and suggestions render as annotation cards in the right column, paired with highlighted mistakes in the body. The "Idle" state described below is what the right column shows before the user has clicked "Check my English"; once feedback exists, the right column populates with annotation cards.
+
+The states described below all live inside the right column at `md+` and collapse to inline blocks (directly after the paragraph containing each mistake) at mobile sizes.
 
 **States:**
 
@@ -983,7 +1129,7 @@ The panel lives below the entry action bar. It starts collapsed (idle state).
 └──────────────────────────────────────────────────┘
 ```
 
-Background: `bg-green-50`, border: `border border-green-200 rounded-xl`.
+Background: `bg-suggestion-bg #142420`, border: `border border-suggestion-border #234032 rounded-xl`. Heading in `font-display text-primary`, supporting copy in `text-secondary`. "Check my English" button uses the primary mint button style.
 
 ---
 
@@ -1057,16 +1203,17 @@ Background: `bg-green-50`, border: `border border-green-200 rounded-xl`.
 └──────────────────────────────────────────────────────────┘
 ```
 
-- Card: `bg-white rounded-lg border border-gray-200 p-4`
-- Original text: `text-red-500 line-through text-sm`
-- Corrected text: `text-green-700 text-sm font-medium`
-- Explanation (English): `text-gray-600 text-sm mt-2` — slightly darker than before so English remains the visual anchor
-- Explanation (Myanmar, `explanation_my`): `text-gray-500 text-sm mt-1 leading-relaxed` — tight `mt-1` keeps the bilingual pair together; `leading-relaxed` gives Myanmar script room to breathe (combining marks need a bit more vertical space than Latin)
+- Card: `bg-surface #1E2026 rounded-lg border border-surface-border #2C2F38 p-4` with a 6px `bg-coral` dot + uppercase `CORRECTION` label in `coral-soft #FF8A6E` in the top-left corner
+- Original text: `text-muted #6E7280 line-through text-sm` (muted, not red — coral is reserved for the divider and underline cues)
+- `→` arrow: `text-coral text-sm`
+- Corrected text: `text-mint #5EE39B text-sm font-medium`
+- Explanation (English): `text-body #D8DAE0 text-sm mt-2` — English remains the visual anchor
+- Explanation (Myanmar, `explanation_my`): `text-bilingual #C99A82 text-sm mt-1 leading-relaxed` — warm tone marks it as the gloss; `leading-relaxed` gives Myanmar combining marks vertical room
 - When `explanation_my` is absent, the Myanmar line is omitted entirely — no fallback copy, no extra spacing.
 
-**Why English-first, Myanmar-second.** Users are here to *learn English*. Reading the English explanation first reinforces the target language; the Myanmar line is a comprehension safety net, not the primary information. Visually subordinating it (softer color, no icon) keeps the focus on English without hiding the safety net from learners who need it.
+**Why English-first, Myanmar-second.** Users are here to *learn English*. Reading the English explanation first reinforces the target language; the Myanmar line is a comprehension safety net, not the primary information. Visually subordinating it (warm bilingual tone, no icon) keeps the focus on English without hiding the safety net from learners who need it.
 
-**Same treatment in `SuggestionCard`.** The `reason` (💬 prefix) line uses the same English-then-Myanmar pairing with identical typography — `text-gray-600` for English, `text-gray-500 leading-relaxed mt-1` for Myanmar.
+**Same treatment in `SuggestionCard`.** The `reason` (💬 prefix) line uses the same English-then-Myanmar pairing with identical typography — `text-body` for English, `text-bilingual leading-relaxed mt-1` for Myanmar — but on the `suggestion-bg #142420 border-suggestion-border #234032` card surface so the suggestion is visually distinct from the correction.
 
 ---
 
@@ -1084,7 +1231,7 @@ Background: `bg-green-50`, border: `border border-green-200 rounded-xl`.
 └──────────────────────────────────────────────────┘
 ```
 
-The "no mistakes" message uses green-600 text and a ✅ to make it feel encouraging, not empty.
+The "no mistakes" message uses `text-mint #5EE39B` and a ✅ to make it feel encouraging, not empty. It sits in the right column as a small `bg-mood-bg` card with a mint dot.
 
 ---
 
@@ -1146,8 +1293,9 @@ The panel slides in below the textarea:
 └──────────────────────────────────────────────────────────┘
 ```
 
-- Each question has its own small `Textarea` (`min-height: 60px`)
-- "Create my draft" is disabled until at least one answer is filled
+- Each question has its own small `Textarea` (`min-height: 60px`, `bg-ink border-surface-border text-body`)
+- "Create my draft" is disabled until at least one answer is filled. Enabled: `bg-[#3DDC84] hover:bg-mint text-[#0A1A12]`.
+- The whole guided questions panel uses `bg-suggestion-bg #142420 border border-suggestion-border #234032 rounded-xl` to match the AI feedback surface family
 
 **Step 4: Loading (calling `/api/ai/draft`)**
 
@@ -1159,7 +1307,7 @@ The panel slides in below the textarea:
 
 **Step 5: Draft created**
 
-The generated draft text is inserted directly into the main body `Textarea`. The guided questions panel closes. A small green `Alert` flashes briefly at the top:
+The generated draft text is inserted directly into the main body `Textarea`. The guided questions panel closes. A small mint `Alert` (`bg-mood-bg border-suggestion-border text-mint`) flashes briefly at the top:
 
 ```
 ✅  Draft created! Review and edit it before saving.
@@ -1199,14 +1347,16 @@ The app is designed **mobile-first**. Every component is built for mobile first,
 
 | Element | Mobile | Desktop (`md+`) |
 |---------|--------|----------------|
-| Page container | `px-4` | `max-w-3xl mx-auto px-4` |
-| Dashboard stats | Stack vertically (1 column) | 3 columns side-by-side |
-| Journal list | Full-width cards | Full-width cards (max-w-3xl) |
+| Page container | `px-4` | `max-w-5xl mx-auto px-4` — wider than before to accommodate the annotation column |
+| Margin/annotation grid | Single column; annotation cards inline directly below the content they describe | Two columns `1.3fr 3px 1fr` with coral divider |
+| Dashboard stats | Stack vertically (1 column) | 3 columns side-by-side; AI tip annotation moves to right column |
+| Journal list | Full-width cards; filter summary as a strip above the list | Cards in content column; filter summary + tip in right column |
 | New entry textarea | `min-h-[180px]` | `min-h-[240px]` |
 | Mood selector | Wrap to 2–3 per row | All 5 in one row |
 | Vocabulary grid | 1 column | 2 columns |
-| AI feedback panel | Full-width below content | Full-width below content |
-| Guided questions panel | Full-width, scrollable | Full-width |
+| AI feedback panel (View Entry) | Annotation cards inline after the paragraph that contains the matching mistake | Annotation cards in the right column of the margin/annotation grid |
+| Guided questions panel | Full-width, scrollable, on `bg-suggestion-bg` | Full-width inside the New Entry content column |
+| Auth pages | Card centered; brand annotation below | Card on the left, brand annotation in the right column |
 
 ---
 
@@ -1231,8 +1381,8 @@ The journal body textarea is the most important interaction on mobile:
 .entry-actions {
   position: sticky;
   bottom: 0;
-  background: white;
-  border-top: 1px solid #e5e7eb;
+  background: #16181C;                       /* ink */
+  border-top: 1px solid #2C2F38;             /* surface-border */
   padding: 12px 16px;
   padding-bottom: max(12px, env(safe-area-inset-bottom));
 }
