@@ -521,8 +521,8 @@ ai-english-journal/
 | Phase 4  | Search & Filtering | Complete    |
 | Phase 5  | AI English Teacher | Complete\*  |
 | Phase 6  | Vocabulary Book    | Complete    |
-| Phase 7  | Progress Tracking  | In Progress |
-| Phase 8  | Settings           | Not Started |
+| Phase 7  | Progress Tracking  | Complete    |
+| Phase 8  | Settings           | In Progress |
 | Phase 9  | Polish & Testing   | Not Started |
 | Phase 10 | Deployment         | Not Started |
 
