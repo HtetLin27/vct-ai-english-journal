@@ -4,6 +4,17 @@ Notable decisions, deviations, and deferred work. Each entry is dated and tagged
 
 ---
 
+## 2026-06-21 — Deployed to Vercel; live Gemini confirmed working
+
+**Phase:** 10 (Deployment)
+**Status:** Live — verification complete, residual cleanup pending.
+
+Deployed to Vercel at https://vct-ai-english-journal.vercel.app/. Confirmed real Gemini API works correctly from Vercel's servers (resolves the Myanmar regional restriction that blocked local testing throughout Phases 5-6). All features verified working in production: auth, journal CRUD, search, AI feedback with bilingual Myanmar support, vocabulary book, dashboard stats, settings.
+
+Remaining before Phase 10 marks Complete: rotate the borrowed `GEMINI_API_KEY` (see `specs/DEPLOYMENT_CHECKLIST.md` §1), re-enable Supabase email confirmation (§2), and write a real `README.md` (§4).
+
+---
+
 ## 2026-06-21 — Phase 9 deferrals (post-audit)
 
 **Phase:** 9 (Polish & Testing)

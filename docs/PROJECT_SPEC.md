@@ -521,6 +521,6 @@ ai-english-journal/
 | Phase 7  | Progress Tracking  | Complete    |
 | Phase 8  | Settings           | Complete    |
 | Phase 9  | Polish & Testing   | In Progress — critical issues resolved, some high-priority accessibility items deferred |
-| Phase 10 | Deployment         | Not Started |
+| Phase 10 | Deployment         | In Progress — live deployment successful, all features verified with real Gemini API. Remaining: rotate Gemini key, re-enable email confirmation, write README |
 
 > Update this table as phases are completed. Use: `Not Started` → `In Progress` → `Complete`.
