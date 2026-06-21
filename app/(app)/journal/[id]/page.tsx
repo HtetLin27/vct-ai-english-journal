@@ -52,6 +52,7 @@ export default async function ViewEntryPage({ params }: PageProps) {
     tags: string[] | null
     word_count: number
   } | null = null
+  let loadError = false
 
   if (userId) {
     const { data, error } = await supabase
@@ -67,9 +68,27 @@ export default async function ViewEntryPage({ params }: PageProps) {
         entryId: params.id,
         error: error.message,
       })
+      loadError = true
     } else {
       entry = data
     }
+  }
+
+  if (loadError) {
+    return (
+      <div
+        role="alert"
+        className="rounded-md border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-600"
+      >
+        <p>Could not load this entry.</p>
+        <a
+          href={`/journal/${params.id}`}
+          className="mt-2 inline-block text-sm font-medium text-red-700 hover:underline"
+        >
+          ↻ Try again
+        </a>
+      </div>
+    )
   }
 
   if (!entry) {

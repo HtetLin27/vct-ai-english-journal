@@ -27,7 +27,7 @@ export default async function DashboardPage() {
 
   if (!user) return null
 
-  const [{ data: streak }, { data: recentEntries }] = await Promise.all([
+  const [streakResult, entriesResult] = await Promise.all([
     supabase
       .from("writing_streaks")
       .select("current_streak, longest_streak, total_words, total_entries")
@@ -42,12 +42,41 @@ export default async function DashboardPage() {
       .limit(3),
   ])
 
+  const greeting = getGreeting(new Date())
+
+  if (streakResult.error || entriesResult.error) {
+    console.error("[dashboard.page] query failed", {
+      userId: user.id,
+      streakError: streakResult.error?.message,
+      entriesError: entriesResult.error?.message,
+    })
+    return (
+      <>
+        <div className="mb-8">
+          <h1 className="text-3xl font-bold text-gray-900">{greeting}</h1>
+        </div>
+        <div
+          role="alert"
+          className="rounded-md border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-600"
+        >
+          <p>Could not load your dashboard.</p>
+          <a
+            href="/dashboard"
+            className="mt-2 inline-block text-sm font-medium text-red-700 hover:underline"
+          >
+            ↻ Try again
+          </a>
+        </div>
+      </>
+    )
+  }
+
+  const streak = streakResult.data
   const currentStreak = streak?.current_streak ?? 0
   const totalWords = streak?.total_words ?? 0
   const totalEntries = streak?.total_entries ?? 0
-  const entries = (recentEntries ?? []) as RecentEntry[]
+  const entries = (entriesResult.data ?? []) as RecentEntry[]
   const isFirstTime = totalEntries === 0 && entries.length === 0
-  const greeting = getGreeting(new Date())
 
   return (
     <>
