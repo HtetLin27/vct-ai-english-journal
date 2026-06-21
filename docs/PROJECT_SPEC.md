@@ -183,7 +183,6 @@ These variables must be present in `.env.local` for local development and config
 | `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Client + Server | Supabase anonymous (public) key                                                      |
 | `SUPABASE_SERVICE_ROLE_KEY`     | Server only     | Supabase service role key — bypasses Row Level Security. Never expose to the client. |
 | `GEMINI_API_KEY`                | Server only     | Google Gemini API key for AI features                                                |
-| `MOCK_AI_RESPONSES`             | Server only     | **Development only — must be `false` (or unset) in production.** When `true`, all `/api/ai/*` routes return hardcoded mock data instead of calling Gemini. Added because Gemini is currently unreachable from the developer's region; remove the mock branches once that's resolved. |
 
 **`.env.local` template:**
 
@@ -192,8 +191,6 @@ NEXT_PUBLIC_SUPABASE_URL=
 NEXT_PUBLIC_SUPABASE_ANON_KEY=
 SUPABASE_SERVICE_ROLE_KEY=
 GEMINI_API_KEY=
-# Development only — leave unset in production.
-MOCK_AI_RESPONSES=true
 ```
 
 ---
@@ -500,7 +497,6 @@ ai-english-journal/
 ### Phase 10 — Deployment
 
 - Configure all environment variables in Vercel
-- **Confirm `MOCK_AI_RESPONSES` is `false` (or unset) in the Vercel environment before deploying.** It is currently `true` in local `.env.local` because Gemini is unreachable from the developer's region. Shipping with it enabled would return hardcoded fake feedback to real users.
 - Deploy to Vercel from GitHub `main` branch
 - Verify production build works
 - Test authentication, journal CRUD, and AI features in production
@@ -520,7 +516,7 @@ ai-english-journal/
 | Phase 2  | Authentication     | Complete    |
 | Phase 3  | Journal CRUD       | Complete    |
 | Phase 4  | Search & Filtering | Complete    |
-| Phase 5  | AI English Teacher | Complete\*  |
+| Phase 5  | AI English Teacher | Complete    |
 | Phase 6  | Vocabulary Book    | Complete    |
 | Phase 7  | Progress Tracking  | Complete    |
 | Phase 8  | Settings           | Complete    |
@@ -528,5 +524,3 @@ ai-english-journal/
 | Phase 10 | Deployment         | Not Started |
 
 > Update this table as phases are completed. Use: `Not Started` → `In Progress` → `Complete`.
-
-> \* Phase 5 was tested end-to-end against `MOCK_AI_RESPONSES=true`. Live Gemini verification is pending deployment because Gemini is currently unreachable from the developer's region. Before considering this phase fully shipped, confirm the three `/api/ai/*` routes work against the real Gemini API once deployed to Vercel (and disable `MOCK_AI_RESPONSES` there — see Phase 10 checklist).

@@ -1,66 +1,3 @@
-// =============================================================================
-// TEMPORARY: MOCK MODE
-// =============================================================================
-// When MOCK_AI_RESPONSES=true (in .env.local), this route bypasses the real
-// Gemini call and returns hardcoded mock feedback so end-to-end local testing
-// is possible. This exists because Gemini access is currently blocked from the
-// developer's region — tracked separately.
-//
-// >>> MOCK_AI_RESPONSES MUST BE UNSET (OR FALSE) IN PRODUCTION. <<<
-// Remove this branch once Gemini is reachable from every environment we run.
-// =============================================================================
-//
-// The defensive error handling around the real Gemini call and JSON parse
-// below is intentional and must be validated against the live API once access
-// is available (deployed to Vercel or run from an allowed region).
-
-const MOCK_FEEDBACK = {
-  corrections: [
-    {
-      original: "I goed to the market yesterday.",
-      corrected: "I went to the market yesterday.",
-      explanation:
-        "'Go' is an irregular verb. Its past tense form is 'went', not 'goed'.",
-      explanation_my:
-        "'Go' က irregular verb ဖြစ်ပါတယ်။ past tense မှာ 'goed' မဟုတ်ဘဲ 'went' ကိုသုံးရပါမယ်။",
-    },
-    {
-      original: "She don't like coffee.",
-      corrected: "She doesn't like coffee.",
-      explanation:
-        "With a third-person singular subject ('she'), use 'doesn't' instead of 'don't'.",
-      explanation_my:
-        "third-person singular subject ('she') နဲ့သုံးတဲ့အခါ 'don't' မဟုတ်ဘဲ 'doesn't' ကိုသုံးပါ။",
-    },
-  ],
-  suggestions: [
-    {
-      type: "vocabulary" as const,
-      original: "very good",
-      suggestion: "excellent",
-      reason:
-        "'Excellent' is more precise and sounds more natural in writing than 'very good'.",
-      reason_my:
-        "'Excellent' က 'very good' ထက် ပိုတိကျပြီး စာအရေးအသားမှာ ပိုသဘာဝကျပါတယ်။",
-      definition: "Extremely good; outstanding in quality.",
-      definition_my: "အလွန်ကောင်းမွန်ပြီး အရည်အသွေးအလွန်ပြည့်စုံတဲ့။",
-      example_sentence: "She did an excellent job on the presentation.",
-    },
-    {
-      type: "expression" as const,
-      original: "I like eat food",
-      suggestion: "I enjoy eating food",
-      reason:
-        "After 'enjoy' in English we use a gerund (-ing form), and 'enjoy' is a more natural choice here.",
-      reason_my:
-        "အင်္ဂလိပ်စာမှာ 'enjoy' ပြီးရင် gerund (-ing form) ကိုသုံးရပြီး၊ ဒီနေရာမှာ 'enjoy' က ပိုသဘာဝကျပါတယ်။",
-      definition: "To take pleasure in the activity of eating.",
-      definition_my: "အစားအသောက်စားခြင်းကို နှစ်သက်ပျော်ရွှင်စွာခံစားရခြင်း။",
-      example_sentence: "I enjoy eating food with my family on weekends.",
-    },
-  ],
-}
-
 import { NextRequest } from "next/server"
 import { requireUser } from "@/lib/supabase/auth-guard"
 import { geminiFlash } from "@/lib/gemini/client"
@@ -266,37 +203,30 @@ export async function POST(request: NextRequest) {
 
   if (entryError || !entry) return jsonNotFound("Entry not found")
 
-  let feedback: { corrections: Correction[]; suggestions: Suggestion[] } | null
+  const truncatedBody = entry.body.slice(0, MAX_BODY_CHARS)
+  const prompt = buildFeedbackPrompt(truncatedBody)
 
-  if (process.env.MOCK_AI_RESPONSES === "true") {
-    // TEMPORARY mock path — see header comment.
-    feedback = MOCK_FEEDBACK
-  } else {
-    const truncatedBody = entry.body.slice(0, MAX_BODY_CHARS)
-    const prompt = buildFeedbackPrompt(truncatedBody)
+  let geminiText: string
+  try {
+    const result = await geminiFlash.generateContent(prompt)
+    geminiText = result.response.text()
+  } catch (err) {
+    console.error("[ai.feedback] Gemini request failed", {
+      userId: user.id,
+      entryId,
+      error: err instanceof Error ? err.message : String(err),
+    })
+    return jsonError("AI service unavailable. Please try again later.", 502)
+  }
 
-    let geminiText: string
-    try {
-      const result = await geminiFlash.generateContent(prompt)
-      geminiText = result.response.text()
-    } catch (err) {
-      console.error("[ai.feedback] Gemini request failed", {
-        userId: user.id,
-        entryId,
-        error: err instanceof Error ? err.message : String(err),
-      })
-      return jsonError("AI service unavailable. Please try again later.", 502)
-    }
-
-    feedback = parseFeedback(geminiText)
-    if (!feedback) {
-      console.error("[ai.feedback] Gemini response was not valid JSON", {
-        userId: user.id,
-        entryId,
-        sample: geminiText.slice(0, 500),
-      })
-      return jsonError("AI service unavailable. Please try again later.", 502)
-    }
+  const feedback = parseFeedback(geminiText)
+  if (!feedback) {
+    console.error("[ai.feedback] Gemini response was not valid JSON", {
+      userId: user.id,
+      entryId,
+      sample: geminiText.slice(0, 500),
+    })
+    return jsonError("AI service unavailable. Please try again later.", 502)
   }
 
   const { data: inserted, error: insertError } = await supabase

@@ -1,22 +1,3 @@
-// =============================================================================
-// TEMPORARY: MOCK MODE
-// =============================================================================
-// When MOCK_AI_RESPONSES=true (in .env.local), this route bypasses the real
-// Gemini call and returns a hardcoded mock draft so end-to-end local testing
-// is possible. This exists because Gemini access is currently blocked from the
-// developer's region — tracked separately.
-//
-// >>> MOCK_AI_RESPONSES MUST BE UNSET (OR FALSE) IN PRODUCTION. <<<
-// Remove this branch once Gemini is reachable from every environment we run.
-// =============================================================================
-//
-// The defensive error handling around the real Gemini call and text
-// sanitization below is intentional and must be validated against the live API
-// once access is available (deployed to Vercel or run from an allowed region).
-
-const MOCK_DRAFT =
-  "Today was a calm but interesting day at work. My manager gave me a new project to lead, which made me both nervous and excited about what is ahead. I went home feeling tired but proud of what I accomplished, and I am looking forward to seeing how the project unfolds tomorrow."
-
 import { NextRequest } from "next/server"
 import { requireUser } from "@/lib/supabase/auth-guard"
 import { geminiFlash } from "@/lib/gemini/client"
@@ -123,11 +104,6 @@ export async function POST(request: NextRequest) {
       "AI features are disabled. Enable them in Settings.",
       403
     )
-  }
-
-  if (process.env.MOCK_AI_RESPONSES === "true") {
-    // TEMPORARY mock path — see header comment.
-    return jsonSuccess({ draft: MOCK_DRAFT })
   }
 
   const prompt = buildDraftPrompt(answers)
