@@ -524,7 +524,7 @@ ai-english-journal/
 | Phase 6  | Vocabulary Book    | Complete    |
 | Phase 7  | Progress Tracking  | Complete    |
 | Phase 8  | Settings           | Complete    |
-| Phase 9  | Polish & Testing   | In Progress |
+| Phase 9  | Polish & Testing   | In Progress — critical issues resolved, some high-priority accessibility items deferred |
 | Phase 10 | Deployment         | Not Started |
 
 > Update this table as phases are completed. Use: `Not Started` → `In Progress` → `Complete`.

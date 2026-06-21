@@ -7,11 +7,12 @@ interface Props {
   value: string
   onChange: (value: string) => void
   placeholder?: string
+  ariaLabel?: string
 }
 
 const DEBOUNCE_MS = 300
 
-export function SearchBar({ value, onChange, placeholder }: Props) {
+export function SearchBar({ value, onChange, placeholder, ariaLabel }: Props) {
   const [draft, setDraft] = useState(value)
 
   // Keep the local draft in sync if the parent resets value
@@ -44,6 +45,7 @@ export function SearchBar({ value, onChange, placeholder }: Props) {
         value={draft}
         onChange={(e) => setDraft(e.target.value)}
         placeholder={placeholder ?? "Search your entries…"}
+        aria-label={ariaLabel ?? placeholder ?? "Search"}
         className="w-full rounded-lg border border-gray-200 bg-white py-2 pl-9 pr-9 text-sm text-gray-700 placeholder:text-gray-500 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-green-600"
       />
       {draft && (

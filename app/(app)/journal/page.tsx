@@ -85,6 +85,7 @@ export default function JournalListPage() {
           value={q}
           onChange={setQ}
           placeholder="Search your entries…"
+          ariaLabel="Search journal entries"
         />
         <FilterBar
           mood={mood}

@@ -24,7 +24,13 @@ export function WordCard({
   const [deleted, setDeleted] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
-  if (deleted) return null
+  if (deleted) {
+    return (
+      <span className="sr-only" role="status" aria-live="polite">
+        Deleted &ldquo;{word}&rdquo; from your vocabulary book.
+      </span>
+    )
+  }
 
   async function handleDelete() {
     if (deleting) return

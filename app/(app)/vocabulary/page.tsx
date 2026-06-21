@@ -59,7 +59,12 @@ export default function VocabularyPage() {
       </p>
 
       <div className="mt-6">
-        <SearchBar value={q} onChange={setQ} placeholder="Search words…" />
+        <SearchBar
+          value={q}
+          onChange={setQ}
+          placeholder="Search words…"
+          ariaLabel="Search vocabulary words"
+        />
       </div>
 
       {hasError ? (

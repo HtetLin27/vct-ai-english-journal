@@ -4,6 +4,15 @@ Notable decisions, deviations, and deferred work. Each entry is dated and tagged
 
 ---
 
+## 2026-06-21 — Phase 9 deferrals (post-audit)
+
+**Phase:** 9 (Polish & Testing)
+**Status:** Deferred — to be revisited later in Phase 9 or pre-deployment.
+
+Deferred for later in Phase 9 or pre-deployment: H6 (focus ring contrast), H7 (mobile date input sizing), H8 (tag input touch target size), and the data-fetching caching strategy discussion (TanStack Query vs current per-navigation fetching).
+
+---
+
 ## 2026-06-21 — README is still the Phase 1 placeholder
 
 **Phase:** 10 (Deployment)

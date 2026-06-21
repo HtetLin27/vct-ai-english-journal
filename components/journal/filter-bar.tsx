@@ -64,12 +64,17 @@ export function FilterBar({
   return (
     <div className="flex flex-wrap gap-3">
       <div className="flex flex-col gap-1">
-        <Label className="text-xs font-medium text-gray-500">Mood</Label>
+        <Label id="filter-mood-label" className="text-xs font-medium text-gray-500">
+          Mood
+        </Label>
         <Select
           value={mood ?? ALL_MOODS}
           onValueChange={(v) => onMoodChange(v === ALL_MOODS ? null : v)}
         >
-          <SelectTrigger className="w-[160px]">
+          <SelectTrigger
+            aria-labelledby="filter-mood-label"
+            className="w-[160px]"
+          >
             <SelectValue placeholder="All moods" />
           </SelectTrigger>
           <SelectContent>

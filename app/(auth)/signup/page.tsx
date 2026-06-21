@@ -15,13 +15,15 @@ import {
   CardTitle,
 } from "@/components/ui/card"
 
+type SuccessKind = "redirecting" | "confirm_email"
+
 export default function SignupPage() {
   const router = useRouter()
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
   const [confirmPassword, setConfirmPassword] = useState("")
   const [error, setError] = useState<string | null>(null)
-  const [success, setSuccess] = useState(false)
+  const [success, setSuccess] = useState<SuccessKind | null>(null)
   const [loading, setLoading] = useState(false)
 
   async function handleSubmit(e: React.FormEvent) {
@@ -40,7 +42,7 @@ export default function SignupPage() {
 
     setLoading(true)
     const supabase = createClient()
-    const { error: signUpError } = await supabase.auth.signUp({
+    const { data, error: signUpError } = await supabase.auth.signUp({
       email,
       password,
     })
@@ -51,13 +53,21 @@ export default function SignupPage() {
       return
     }
 
-    setSuccess(true)
-    setLoading(false)
-
-    setTimeout(() => {
-      router.push("/dashboard")
-      router.refresh()
-    }, 800)
+    // When Supabase email confirmation is OFF (current local dev), signUp returns
+    // a session immediately — log the user straight in. When it's ON (production),
+    // signUp returns a user but no session; the user must click the email link
+    // before they can log in, so don't redirect — show a "check your email" message.
+    if (data.session) {
+      setSuccess("redirecting")
+      setLoading(false)
+      setTimeout(() => {
+        router.push("/dashboard")
+        router.refresh()
+      }, 800)
+    } else {
+      setSuccess("confirm_email")
+      setLoading(false)
+    }
   }
 
   return (
@@ -127,7 +137,7 @@ export default function SignupPage() {
 
           <Button
             type="submit"
-            disabled={loading || success}
+            disabled={loading || success !== null}
             className="w-full bg-green-600 hover:bg-green-700 text-white"
           >
             {loading ? "Creating account…" : "Create Account"}
@@ -142,12 +152,21 @@ export default function SignupPage() {
             </div>
           )}
 
-          {success && (
+          {success === "redirecting" && (
             <div
               role="status"
               className="bg-green-50 border border-green-200 text-green-600 rounded-md px-3 py-2 text-sm"
             >
               ✅ Account created! Redirecting…
+            </div>
+          )}
+
+          {success === "confirm_email" && (
+            <div
+              role="status"
+              className="bg-green-50 border border-green-200 text-green-600 rounded-md px-3 py-2 text-sm"
+            >
+              📧 Check your email to confirm your account, then log in.
             </div>
           )}
         </form>

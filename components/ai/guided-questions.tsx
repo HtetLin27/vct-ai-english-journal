@@ -166,7 +166,11 @@ export function GuidedQuestions({ onDraftReady }: Props) {
 
   if (step.kind === "loadingQuestions") {
     return (
-      <section className="rounded-xl border border-green-200 bg-green-50 p-4">
+      <section
+        role="status"
+        aria-live="polite"
+        className="rounded-xl border border-green-200 bg-green-50 p-4"
+      >
         <p className="flex items-center gap-2 text-sm font-medium text-gray-900">
           <span aria-hidden>💡</span>
           <span>Thinking of questions for you…</span>
@@ -234,7 +238,11 @@ export function GuidedQuestions({ onDraftReady }: Props) {
 
   // loadingDraft
   return (
-    <section className="rounded-xl border border-green-200 bg-green-50 p-4">
+    <section
+      role="status"
+      aria-live="polite"
+      className="rounded-xl border border-green-200 bg-green-50 p-4"
+    >
       <p className="flex items-center gap-2 text-sm font-medium text-gray-900">
         <span aria-hidden>✨</span>
         <span>Writing your draft…</span>

@@ -117,7 +117,10 @@ export function AiFeedbackPanel({ entryId }: Props) {
 
   if (error?.kind === "ai_disabled") {
     return (
-      <section className="mt-6 rounded-xl border border-green-200 bg-green-50 p-4">
+      <section
+        aria-label="AI English feedback"
+        className="mt-6 rounded-xl border border-green-200 bg-green-50 p-4"
+      >
         <p className="text-sm text-gray-700">
           AI features are turned off. Go to Settings to enable them.
         </p>
@@ -132,7 +135,10 @@ export function AiFeedbackPanel({ entryId }: Props) {
 
   if (error?.kind === "generic") {
     return (
-      <section className="mt-6 rounded-xl border border-red-200 bg-red-50 p-4">
+      <section
+        aria-label="AI English feedback"
+        className="mt-6 rounded-xl border border-red-200 bg-red-50 p-4"
+      >
         <p className="text-sm text-red-600">{error.message}</p>
         <div className="mt-3">
           <Button
@@ -149,7 +155,12 @@ export function AiFeedbackPanel({ entryId }: Props) {
 
   if (loading) {
     return (
-      <section className="mt-6 rounded-xl border border-green-200 bg-green-50 p-4">
+      <section
+        aria-label="AI English feedback"
+        role="status"
+        aria-live="polite"
+        className="mt-6 rounded-xl border border-green-200 bg-green-50 p-4"
+      >
         <p className="text-sm font-medium text-gray-900">
           <span aria-hidden>✨ </span>
           Checking your English…
@@ -168,7 +179,10 @@ export function AiFeedbackPanel({ entryId }: Props) {
   if (feedback) {
     const { corrections, suggestions } = feedback
     return (
-      <section className="mt-6 rounded-xl border border-green-200 bg-green-50 p-4">
+      <section
+        aria-label="AI English feedback"
+        className="mt-6 rounded-xl border border-green-200 bg-green-50 p-4"
+      >
         <h2 className="text-xl font-semibold text-gray-800">
           <span aria-hidden>✨ </span>
           Your English Feedback
@@ -246,7 +260,10 @@ export function AiFeedbackPanel({ entryId }: Props) {
   }
 
   return (
-    <section className="mt-6 rounded-xl border border-green-200 bg-green-50 p-4">
+    <section
+      aria-label="AI English feedback"
+      className="mt-6 rounded-xl border border-green-200 bg-green-50 p-4"
+    >
       <div className="flex flex-wrap items-center gap-3">
         <Button
           onClick={requestFeedback}
