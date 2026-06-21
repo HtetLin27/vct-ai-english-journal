@@ -12,24 +12,36 @@ export function CorrectionCard({
   explanationMy,
 }: Props) {
   return (
-    <div className="rounded-lg border border-gray-200 bg-white p-4">
-      <p className="text-sm text-red-500 line-through">{original}</p>
-      <p className="mt-2 text-sm font-medium text-green-700">
-        <span aria-hidden>→ </span>
-        {corrected}
+    <article className="rounded-lg border border-border bg-surface p-4">
+      <header className="mb-3 flex items-center gap-2">
+        <span
+          aria-hidden
+          className="inline-block h-1.5 w-1.5 rounded-full bg-coral"
+        />
+        <span className="font-display text-[11px] font-semibold uppercase tracking-wider text-coral-light">
+          Correction
+        </span>
+      </header>
+
+      <p className="text-sm leading-relaxed text-text-tertiary line-through decoration-text-tertiary/60">
+        {original}
       </p>
-      <p className="mt-2 text-sm text-gray-600">
-        <span aria-hidden>💡 </span>
+      <p className="mt-1 text-sm leading-relaxed">
+        <span aria-hidden className="mr-1 text-coral">→</span>
+        <span className="font-medium text-mint">{corrected}</span>
+      </p>
+
+      <p className="mt-3 text-sm leading-relaxed text-text-body">
         {explanation}
       </p>
       {explanationMy && (
         <p
           lang="my"
-          className="mt-1 text-sm leading-relaxed text-gray-500"
+          className="mt-1 text-sm leading-relaxed text-myanmar-text"
         >
           {explanationMy}
         </p>
       )}
-    </div>
+    </article>
   )
 }

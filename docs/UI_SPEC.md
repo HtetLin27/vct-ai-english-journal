@@ -242,44 +242,6 @@ There are no traditional drop shadows on dark — they read as muddy halos. Elev
 
 ---
 
-### 2.3 Spacing Scale
-
-Base unit: `4px` (Tailwind's default). Use multiples consistently.
-
-| Name | Tailwind | Value | Usage |
-|------|---------|-------|-------|
-| xs | `p-1` / `gap-1` | 4px | Tight icon padding, badge inner |
-| sm | `p-2` / `gap-2` | 8px | Button padding (y), tag gaps |
-| md | `p-4` / `gap-4` | 16px | Card padding, form field gaps |
-| lg | `p-6` / `gap-6` | 24px | Section gaps, card outer padding |
-| xl | `p-8` / `gap-8` | 32px | Page section vertical spacing |
-| 2xl | `p-12` / `gap-12` | 48px | Major page section breaks |
-
----
-
-### 2.4 Border Radius Scale
-
-| Name | Tailwind | Value | Usage |
-|------|---------|-------|-------|
-| sm | `rounded` | 4px | Small badges, subtle rounding |
-| md | `rounded-lg` | 8px | Input fields, buttons |
-| lg | `rounded-xl` | 12px | Cards, panels |
-| xl | `rounded-2xl` | 16px | Modals, large surfaces |
-| full | `rounded-full` | 9999px | Mood pills, avatar, streak badge |
-
----
-
-### 2.5 Shadow Scale
-
-| Name | Tailwind | Usage |
-|------|---------|-------|
-| None | — | Form inputs (use border instead) |
-| sm | `shadow-sm` | Cards at rest |
-| md | `shadow-md` | Dropdowns, popovers |
-| lg | `shadow-lg` | Modals, AI feedback panel |
-
----
-
 ## 3. Layout & Navigation
 
 ### 3.1 Overall App Structure

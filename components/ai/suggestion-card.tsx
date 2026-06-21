@@ -37,53 +37,73 @@ export function SuggestionCard({
   }
 
   return (
-    <div className="rounded-lg border border-gray-200 bg-white p-4">
-      <p className="text-sm text-gray-700">
-        <span className="text-red-500 line-through">{original}</span>
-        <span aria-hidden className="mx-2 text-gray-400">
+    <article className="rounded-lg border border-suggestion-border bg-suggestion-bg p-4">
+      <header className="mb-3 flex items-center gap-2">
+        <span aria-hidden className="text-mint">
+          💡
+        </span>
+        <span className="font-display text-[11px] font-semibold uppercase tracking-wider text-mint">
+          Suggestion
+        </span>
+      </header>
+
+      <p className="text-sm leading-relaxed">
+        <span className="text-text-tertiary line-through decoration-text-tertiary/60">
+          {original}
+        </span>
+        <span aria-hidden className="mx-2 text-coral">
           →
         </span>
-        <span className="font-medium text-green-700">{suggestion}</span>
+        <span className="font-medium text-mint">{suggestion}</span>
       </p>
-      <p className="mt-2 text-sm text-gray-600">{definition}</p>
-      <p className="mt-1 text-sm text-gray-600">
-        <span aria-hidden>💬 </span>
-        {reason}
-      </p>
+
+      <p className="mt-2 text-sm leading-relaxed text-text-body">{definition}</p>
+      <p className="mt-2 text-sm leading-relaxed text-text-body">{reason}</p>
       {reasonMy && (
         <p
           lang="my"
-          className="mt-1 text-sm leading-relaxed text-gray-500"
+          className="mt-1 text-sm leading-relaxed text-myanmar-text"
         >
           {reasonMy}
         </p>
       )}
+
       {type === "vocabulary" && (
         <div className="mt-3 flex flex-col items-end gap-1">
           {saveState === "saved" ? (
             <Button
               size="sm"
               disabled
-              className="bg-green-100 text-green-800 hover:bg-green-100 disabled:opacity-100"
+              className="border border-suggestion-border bg-mood-bg text-mint hover:bg-mood-bg disabled:opacity-100"
             >
               ✓ Saved
             </Button>
           ) : saveState === "saving" ? (
-            <Button variant="outline" size="sm" disabled>
+            <Button
+              variant="outline"
+              size="sm"
+              disabled
+              className="border-border bg-surface text-text-secondary"
+            >
               Saving…
             </Button>
           ) : (
-            <Button variant="outline" size="sm" onClick={handleClick}>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={handleClick}
+              className="border-border bg-surface text-text-primary hover:bg-surface-elevated hover:text-mint"
+            >
               + Save &ldquo;{suggestion}&rdquo;
             </Button>
           )}
           {saveState === "error" && (
-            <p className="text-xs text-red-600">
+            <p className="text-xs text-coral-light">
               Couldn&apos;t save. Tap to try again.
             </p>
           )}
         </div>
       )}
-    </div>
+    </article>
   )
 }

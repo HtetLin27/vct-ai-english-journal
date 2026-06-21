@@ -50,7 +50,7 @@ export function DeleteEntryButton({ entryId }: Props) {
       <AlertDialogTrigger asChild>
         <Button
           variant="outline"
-          className="border-red-200 text-red-600 hover:bg-red-50 hover:text-red-700"
+          className="border-border bg-surface text-coral-light hover:bg-mistake-bg hover:text-coral-light hover:border-coral"
         >
           🗑 Delete
         </Button>
@@ -65,7 +65,7 @@ export function DeleteEntryButton({ entryId }: Props) {
         {error && (
           <div
             role="alert"
-            className="rounded-md border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-600"
+            className="rounded-md border border-coral bg-mistake-bg px-3 py-2 text-sm text-coral-light"
           >
             {error}
           </div>
@@ -78,7 +78,7 @@ export function DeleteEntryButton({ entryId }: Props) {
               handleConfirm()
             }}
             disabled={deleting}
-            className="bg-red-600 text-white hover:bg-red-700"
+            className="bg-coral text-mistake-bg hover:bg-coral-light"
           >
             {deleting ? "Deleting…" : "Delete"}
           </AlertDialogAction>

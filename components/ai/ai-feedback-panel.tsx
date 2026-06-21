@@ -24,7 +24,7 @@ interface Suggestion {
   example_sentence: string
 }
 
-interface Feedback {
+export interface Feedback {
   corrections: Correction[]
   suggestions: Suggestion[]
 }
@@ -35,11 +35,19 @@ type PanelError =
 
 interface Props {
   entryId: string
+  feedback: Feedback | null
+  onFeedbackChange: (feedback: Feedback | null) => void
 }
 
-export function AiFeedbackPanel({ entryId }: Props) {
+const PANEL_BASE =
+  "rounded-xl border border-suggestion-border bg-suggestion-bg p-4"
+
+export function AiFeedbackPanel({
+  entryId,
+  feedback,
+  onFeedbackChange,
+}: Props) {
   const [loading, setLoading] = useState(false)
-  const [feedback, setFeedback] = useState<Feedback | null>(null)
   const [error, setError] = useState<PanelError | null>(null)
 
   async function handleSaveWord(suggestion: Suggestion): Promise<SaveResult> {
@@ -50,9 +58,6 @@ export function AiFeedbackPanel({ entryId }: Props) {
         body: JSON.stringify({
           word: suggestion.suggestion,
           definition: suggestion.definition,
-          // Forward only when the suggestion carries it — older feedback rows
-          // (and any future suggestion source without a Myanmar definition)
-          // simply omit the field, matching the optional API contract.
           ...(suggestion.definition_my
             ? { definition_my: suggestion.definition_my }
             : {}),
@@ -63,8 +68,6 @@ export function AiFeedbackPanel({ entryId }: Props) {
 
       if (res.ok) return "saved"
 
-      // Treat the unique-constraint duplicate as success: the user's intent
-      // (word in vocabulary book) is already satisfied.
       if (res.status === 400) {
         const json = await res.json().catch(() => null)
         if (json?.error === "This word is already in your vocabulary book") {
@@ -101,7 +104,7 @@ export function AiFeedbackPanel({ entryId }: Props) {
         })
         return
       }
-      setFeedback({
+      onFeedbackChange({
         corrections: json.data.corrections ?? [],
         suggestions: json.data.suggestions ?? [],
       })
@@ -119,13 +122,18 @@ export function AiFeedbackPanel({ entryId }: Props) {
     return (
       <section
         aria-label="AI English feedback"
-        className="mt-6 rounded-xl border border-green-200 bg-green-50 p-4"
+        className="rounded-xl border border-border bg-surface p-4"
       >
-        <p className="text-sm text-gray-700">
+        <p className="text-sm text-text-body">
           AI features are turned off. Go to Settings to enable them.
         </p>
         <div className="mt-3">
-          <Button asChild variant="outline" size="sm">
+          <Button
+            asChild
+            variant="outline"
+            size="sm"
+            className="border-border bg-surface text-text-primary hover:bg-surface-elevated hover:text-mint"
+          >
             <Link href="/settings">Settings →</Link>
           </Button>
         </div>
@@ -137,14 +145,14 @@ export function AiFeedbackPanel({ entryId }: Props) {
     return (
       <section
         aria-label="AI English feedback"
-        className="mt-6 rounded-xl border border-red-200 bg-red-50 p-4"
+        className="rounded-xl border border-coral bg-mistake-bg p-4"
       >
-        <p className="text-sm text-red-600">{error.message}</p>
+        <p className="text-sm text-coral-light">{error.message}</p>
         <div className="mt-3">
           <Button
             onClick={requestFeedback}
             disabled={loading}
-            className="bg-green-600 text-white hover:bg-green-700"
+            className="bg-mint-dark text-mint-on hover:bg-mint"
           >
             ↻ Try again
           </Button>
@@ -159,16 +167,16 @@ export function AiFeedbackPanel({ entryId }: Props) {
         aria-label="AI English feedback"
         role="status"
         aria-live="polite"
-        className="mt-6 rounded-xl border border-green-200 bg-green-50 p-4"
+        className={PANEL_BASE}
       >
-        <p className="text-sm font-medium text-gray-900">
+        <p className="font-display text-base font-semibold text-text-primary">
           <span aria-hidden>✨ </span>
           Checking your English…
         </p>
-        <div className="mt-3 flex items-center gap-2 text-sm text-gray-500">
+        <div className="mt-3 flex items-center gap-2 text-sm text-text-secondary">
           <span
             aria-hidden
-            className="inline-block h-4 w-4 animate-spin rounded-full border-2 border-green-200 border-t-green-600"
+            className="inline-block h-4 w-4 animate-spin rounded-full border-2 border-suggestion-border border-t-mint"
           />
           <span>This usually takes a few seconds.</span>
         </div>
@@ -181,100 +189,95 @@ export function AiFeedbackPanel({ entryId }: Props) {
     return (
       <section
         aria-label="AI English feedback"
-        className="mt-6 rounded-xl border border-green-200 bg-green-50 p-4"
+        className="flex flex-col gap-4"
       >
-        <h2 className="text-xl font-semibold text-gray-800">
-          <span aria-hidden>✨ </span>
-          Your English Feedback
-        </h2>
-
-        <div className="mt-4">
-          {corrections.length === 0 ? (
-            <p className="text-sm font-medium text-green-600">
-              <span aria-hidden>✅ </span>
-              Great job! No grammar mistakes found. Your writing looks correct.
-            </p>
-          ) : (
-            <>
-              <h3 className="text-sm font-semibold text-gray-800">
-                Grammar Corrections{" "}
-                <span className="font-normal text-gray-500">
-                  ({corrections.length} found)
-                </span>
-              </h3>
-              <hr className="my-2 border-green-200" />
-              <div className="space-y-3">
-                {corrections.map((c, i) => (
-                  <CorrectionCard
-                    key={i}
-                    original={c.original}
-                    corrected={c.corrected}
-                    explanation={c.explanation}
-                    explanationMy={c.explanation_my}
-                  />
-                ))}
-              </div>
-            </>
-          )}
-        </div>
-
-        {suggestions.length > 0 && (
-          <div className="mt-6">
-            <h3 className="text-sm font-semibold text-gray-800">
-              Vocabulary Suggestions{" "}
-              <span className="font-normal text-gray-500">
-                ({suggestions.length} found)
-              </span>
-            </h3>
-            <hr className="my-2 border-green-200" />
-            <div className="space-y-3">
-              {suggestions.map((s, i) => (
-                <SuggestionCard
-                  key={i}
-                  type={s.type}
-                  original={s.original}
-                  suggestion={s.suggestion}
-                  reason={s.reason}
-                  reasonMy={s.reason_my}
-                  definition={s.definition}
-                  example_sentence={s.example_sentence}
-                  onSave={() => handleSaveWord(s)}
-                />
-              ))}
-            </div>
-          </div>
-        )}
-
-        <div className="mt-6">
+        <header className="flex items-center justify-between">
+          <h2 className="font-display text-xl font-semibold text-text-primary">
+            <span aria-hidden>✨ </span>
+            Your English Feedback
+          </h2>
           <Button
             onClick={requestFeedback}
             disabled={loading}
             variant="outline"
             size="sm"
+            className="border-border bg-surface text-text-secondary hover:bg-surface-elevated hover:text-text-primary"
           >
-            ↻ Refresh feedback
+            ↻ Refresh
           </Button>
-        </div>
+        </header>
+
+        {corrections.length === 0 ? (
+          <div className="rounded-lg border border-suggestion-border bg-mood-bg p-3">
+            <p className="text-sm font-medium text-mint">
+              <span aria-hidden>✅ </span>
+              Great job! No grammar mistakes found.
+            </p>
+          </div>
+        ) : (
+          <div className="flex flex-col gap-3">
+            <h3 className="font-display text-[11px] font-semibold uppercase tracking-wider text-coral-light">
+              Corrections{" "}
+              <span className="font-body font-normal text-text-tertiary">
+                · {corrections.length} found
+              </span>
+            </h3>
+            {corrections.map((c, i) => (
+              <CorrectionCard
+                key={i}
+                original={c.original}
+                corrected={c.corrected}
+                explanation={c.explanation}
+                explanationMy={c.explanation_my}
+              />
+            ))}
+          </div>
+        )}
+
+        {suggestions.length > 0 && (
+          <div className="flex flex-col gap-3">
+            <h3 className="font-display text-[11px] font-semibold uppercase tracking-wider text-mint">
+              Suggestions{" "}
+              <span className="font-body font-normal text-text-tertiary">
+                · {suggestions.length} found
+              </span>
+            </h3>
+            {suggestions.map((s, i) => (
+              <SuggestionCard
+                key={i}
+                type={s.type}
+                original={s.original}
+                suggestion={s.suggestion}
+                reason={s.reason}
+                reasonMy={s.reason_my}
+                definition={s.definition}
+                example_sentence={s.example_sentence}
+                onSave={() => handleSaveWord(s)}
+              />
+            ))}
+          </div>
+        )}
       </section>
     )
   }
 
   return (
-    <section
-      aria-label="AI English feedback"
-      className="mt-6 rounded-xl border border-green-200 bg-green-50 p-4"
-    >
-      <div className="flex flex-wrap items-center gap-3">
+    <section aria-label="AI English feedback" className={PANEL_BASE}>
+      <h2 className="font-display text-base font-semibold text-text-primary">
+        <span aria-hidden>✨ </span>
+        Check my English
+      </h2>
+      <p className="mt-1 text-sm text-text-body">
+        Get grammar feedback and vocabulary tips.
+      </p>
+      <div className="mt-3">
         <Button
           onClick={requestFeedback}
-          className="bg-green-600 text-white hover:bg-green-700"
+          className="bg-mint-dark text-mint-on hover:bg-mint"
         >
           ✨ Check my English
         </Button>
       </div>
-      <p className="mt-2 text-sm text-gray-700">
-        Get grammar feedback and vocabulary tips.
-      </p>
     </section>
   )
 }
