@@ -53,19 +53,21 @@ export function WordCard({
   }
 
   return (
-    <div className="relative rounded-xl border border-gray-200 bg-white p-4 shadow-sm">
-      <h3 className="text-lg font-semibold text-gray-900">{word}</h3>
-      <p className="mt-1 text-sm text-gray-600">{definition}</p>
+    <div className="relative rounded-[24px] border border-white/80 bg-white/78 p-5 shadow-[0_18px_42px_-30px_rgba(23,50,77,0.45)]">
+      <h3 className="font-display text-3xl font-semibold tracking-[-0.05em] text-foreground">
+        {word}
+      </h3>
+      <p className="mt-2 text-sm leading-6 text-foreground">{definition}</p>
       {definitionMy && (
         <p
           lang="my"
-          className="mt-0.5 text-sm leading-relaxed text-gray-500"
+          className="mt-1 text-sm leading-relaxed text-muted-foreground"
         >
           {definitionMy}
         </p>
       )}
-      <hr className="my-3 border-gray-200" />
-      <p className="pr-8 text-sm italic text-gray-500">
+      <hr className="soft-divider my-4" />
+      <p className="pr-8 text-sm italic leading-6 text-muted-foreground">
         &ldquo;{example_sentence}&rdquo;
       </p>
       <button
@@ -73,12 +75,12 @@ export function WordCard({
         onClick={handleDelete}
         disabled={deleting}
         aria-label={`Delete ${word}`}
-        className="absolute bottom-3 right-3 text-red-400 hover:text-red-600 disabled:opacity-50"
+        className="absolute bottom-4 right-4 rounded-full border border-red-100 bg-red-50/80 p-2 text-red-500 transition-colors hover:text-red-700 disabled:opacity-50"
       >
         <Trash2 className="h-4 w-4" aria-hidden />
       </button>
       {error && (
-        <p role="alert" className="mt-2 text-xs text-red-600">
+        <p role="alert" className="mt-3 text-xs text-red-700">
           {error}
         </p>
       )}

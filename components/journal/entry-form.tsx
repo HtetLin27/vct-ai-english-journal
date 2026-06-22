@@ -2,15 +2,16 @@
 
 import { useEffect, useState } from "react"
 import { useRouter } from "next/navigation"
+import { CalendarDays, Check, Tags, TextCursorInput } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import {
   MoodSelector,
-  type MoodValue,
 } from "@/components/journal/mood-selector"
 import { TagInput } from "@/components/journal/tag-input"
 import { GuidedQuestions } from "@/components/ai/guided-questions"
+import { type MoodValue } from "@/lib/moods"
 
 export interface EntryFormValues {
   entry_date: string
@@ -109,68 +110,69 @@ export function EntryForm({
       {draftAlert && (
         <div
           role="status"
-          className="rounded-md border border-green-200 bg-green-50 px-3 py-2 text-sm text-green-700"
+          className="inline-flex items-center gap-2 rounded-full border border-emerald-200 bg-emerald-50 px-4 py-2 text-sm text-emerald-700"
         >
-          ✅ Draft created! Review and edit it before saving.
+          <Check className="h-4 w-4" />
+          Draft created. Review and edit it before saving.
         </div>
       )}
 
-      <div className="space-y-2">
-        <Label
-          htmlFor="entry-date"
-          className="text-base font-semibold text-gray-800"
-        >
-          Date
-        </Label>
-        <Input
-          id="entry-date"
-          type="date"
-          value={entryDate}
-          onChange={(e) => setEntryDate(e.target.value)}
-          required
-          className="w-auto"
-        />
-      </div>
+      <section className="grid gap-4 rounded-[28px] border border-white/80 bg-white/76 p-5 shadow-[0_18px_42px_-30px_rgba(23,50,77,0.45)] md:grid-cols-2">
+        <div className="space-y-2">
+          <Label
+            htmlFor="entry-date"
+            className="inline-flex items-center gap-2 text-base font-semibold"
+          >
+            <CalendarDays className="h-4 w-4 text-muted-foreground" />
+            Date
+          </Label>
+          <Input
+            id="entry-date"
+            type="date"
+            value={entryDate}
+            onChange={(e) => setEntryDate(e.target.value)}
+            required
+            className="w-full"
+          />
+        </div>
 
-      <div className="space-y-2">
-        <Label
-          htmlFor="title"
-          className="text-base font-semibold text-gray-800"
-        >
-          Title
-        </Label>
-        <Input
-          id="title"
-          type="text"
-          placeholder="Give your entry a title…"
-          value={title}
-          onChange={(e) => setTitle(e.target.value)}
-        />
-        {titleError && <p className="text-sm text-red-600">{titleError}</p>}
-      </div>
+        <div className="space-y-2">
+          <Label
+            htmlFor="title"
+            className="inline-flex items-center gap-2 text-base font-semibold"
+          >
+            <TextCursorInput className="h-4 w-4 text-muted-foreground" />
+            Title
+          </Label>
+          <Input
+            id="title"
+            type="text"
+            placeholder="Give your entry a title…"
+            value={title}
+            onChange={(e) => setTitle(e.target.value)}
+          />
+          {titleError && <p className="text-sm text-red-700">{titleError}</p>}
+        </div>
+      </section>
 
-      <div className="space-y-2">
-        <Label className="text-base font-semibold text-gray-800">
-          How are you feeling?
-        </Label>
+      <section className="space-y-2 rounded-[28px] border border-white/80 bg-white/76 p-5 shadow-[0_18px_42px_-30px_rgba(23,50,77,0.45)]">
+        <Label className="text-base font-semibold">How are you feeling?</Label>
         <MoodSelector value={mood} onChange={setMood} />
-      </div>
+      </section>
 
-      <div className="space-y-2">
-        <Label className="text-base font-semibold text-gray-800">
+      <section className="space-y-2 rounded-[28px] border border-white/80 bg-white/76 p-5 shadow-[0_18px_42px_-30px_rgba(23,50,77,0.45)]">
+        <Label className="inline-flex items-center gap-2 text-base font-semibold">
+          <Tags className="h-4 w-4 text-muted-foreground" />
           Tags{" "}
-          <span className="text-sm font-normal text-gray-500">
+          <span className="text-sm font-normal text-muted-foreground">
             (press Enter to add)
           </span>
         </Label>
         <TagInput value={tags} onChange={setTags} />
-      </div>
+      </section>
 
-      <div className="space-y-2">
-        <Label
-          htmlFor="body"
-          className="text-base font-semibold text-gray-800"
-        >
+      <section className="space-y-2 rounded-[28px] border border-white/80 bg-white/78 p-5 shadow-[0_18px_42px_-30px_rgba(23,50,77,0.45)]">
+        <Label htmlFor="body" className="text-base font-semibold">
           What happened today?
         </Label>
         <textarea
@@ -178,31 +180,27 @@ export function EntryForm({
           placeholder="Write about your day…"
           value={body}
           onChange={(e) => setBody(e.target.value)}
-          className="flex min-h-[180px] w-full rounded-md border border-gray-200 bg-white px-3 py-2 text-base leading-7 text-gray-700 placeholder:text-gray-500 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-green-600 md:min-h-[240px]"
+          className="flex min-h-[220px] w-full rounded-[24px] border border-input bg-white/80 px-4 py-4 text-base leading-8 text-foreground placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background md:min-h-[280px]"
         />
-        {bodyError && <p className="text-sm text-red-600">{bodyError}</p>}
+        {bodyError && <p className="text-sm text-red-700">{bodyError}</p>}
         {showGuidedQuestions && (
           <div className="pt-2">
             <GuidedQuestions onDraftReady={handleDraftReady} />
           </div>
         )}
-      </div>
+      </section>
 
       {formError && (
         <div
           role="alert"
-          className="rounded-md border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-600"
+          className="rounded-[18px] border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700"
         >
           {formError}
         </div>
       )}
 
       <div className="flex gap-3">
-        <Button
-          type="submit"
-          disabled={loading}
-          className="bg-green-600 text-white hover:bg-green-700"
-        >
+        <Button type="submit" disabled={loading}>
           {loading ? submittingLabel : submitLabel}
         </Button>
         <Button

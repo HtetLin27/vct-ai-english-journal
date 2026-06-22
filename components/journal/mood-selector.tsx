@@ -1,14 +1,7 @@
 "use client"
 
-const MOODS = [
-  { value: "happy", emoji: "😊", label: "Happy" },
-  { value: "sad", emoji: "😢", label: "Sad" },
-  { value: "neutral", emoji: "😐", label: "Neutral" },
-  { value: "excited", emoji: "🤩", label: "Excited" },
-  { value: "tired", emoji: "😴", label: "Tired" },
-] as const
-
-export type MoodValue = (typeof MOODS)[number]["value"]
+import { Check } from "lucide-react"
+import { MOODS, type MoodValue } from "@/lib/moods"
 
 interface Props {
   value: MoodValue | null
@@ -28,16 +21,14 @@ export function MoodSelector({ value, onChange }: Props) {
             aria-pressed={selected}
             className={
               selected
-                ? "inline-flex items-center gap-1.5 rounded-full border-2 border-green-600 bg-green-100 px-4 py-2 text-sm font-medium text-green-800"
-                : "inline-flex items-center gap-1.5 rounded-full border border-gray-200 bg-white px-4 py-2 text-sm text-gray-500 hover:bg-gray-50 hover:border-gray-400"
+                ? "inline-flex items-center gap-2 rounded-full border border-[#17324d]/15 bg-[#17324d] px-4 py-2.5 text-sm font-medium text-white shadow-[0_18px_36px_-24px_rgba(23,50,77,0.8)]"
+                : "inline-flex items-center gap-2 rounded-full border border-white/80 bg-white/80 px-4 py-2.5 text-sm text-muted-foreground shadow-[0_12px_30px_-26px_rgba(23,50,77,0.4)] transition-all hover:-translate-y-0.5 hover:text-foreground"
             }
           >
             {selected && (
-              <span aria-hidden className="text-green-700">
-                ✓
-              </span>
+              <Check className="h-4 w-4" aria-hidden />
             )}
-            <span aria-hidden>{m.emoji}</span>
+            <m.Icon className="h-4 w-4" aria-hidden />
             <span>{m.label}</span>
           </button>
         )

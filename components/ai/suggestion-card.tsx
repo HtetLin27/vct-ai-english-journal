@@ -1,6 +1,7 @@
 "use client"
 
 import { useState } from "react"
+import { Check, MessageSquareText, Plus, Save, ArrowRight } from "lucide-react"
 import { Button } from "@/components/ui/button"
 
 export type SaveResult = "saved" | "error"
@@ -37,23 +38,21 @@ export function SuggestionCard({
   }
 
   return (
-    <div className="rounded-lg border border-gray-200 bg-white p-4">
-      <p className="text-sm text-gray-700">
+    <div className="rounded-[24px] border border-white/80 bg-white/85 p-4 shadow-[0_16px_32px_-28px_rgba(23,50,77,0.4)]">
+      <p className="text-sm text-foreground">
         <span className="text-red-500 line-through">{original}</span>
-        <span aria-hidden className="mx-2 text-gray-400">
-          →
-        </span>
-        <span className="font-medium text-green-700">{suggestion}</span>
+        <ArrowRight aria-hidden className="mx-2 inline h-4 w-4 text-muted-foreground" />
+        <span className="font-medium text-primary">{suggestion}</span>
       </p>
-      <p className="mt-2 text-sm text-gray-600">{definition}</p>
-      <p className="mt-1 text-sm text-gray-600">
-        <span aria-hidden>💬 </span>
+      <p className="mt-2 text-sm leading-6 text-foreground">{definition}</p>
+      <p className="mt-2 flex items-start gap-2 text-sm leading-6 text-muted-foreground">
+        <MessageSquareText className="mt-0.5 h-4 w-4 shrink-0 text-[#9a5c24]" aria-hidden />
         {reason}
       </p>
       {reasonMy && (
         <p
           lang="my"
-          className="mt-1 text-sm leading-relaxed text-gray-500"
+          className="mt-1 text-sm leading-relaxed text-muted-foreground"
         >
           {reasonMy}
         </p>
@@ -64,21 +63,24 @@ export function SuggestionCard({
             <Button
               size="sm"
               disabled
-              className="bg-green-100 text-green-800 hover:bg-green-100 disabled:opacity-100"
+              className="bg-emerald-100 text-emerald-800 hover:bg-emerald-100 disabled:opacity-100"
             >
-              ✓ Saved
+              <Check className="h-4 w-4" />
+              Saved
             </Button>
           ) : saveState === "saving" ? (
             <Button variant="outline" size="sm" disabled>
+              <Save className="h-4 w-4" />
               Saving…
             </Button>
           ) : (
             <Button variant="outline" size="sm" onClick={handleClick}>
-              + Save &ldquo;{suggestion}&rdquo;
+              <Plus className="h-4 w-4" />
+              Save &ldquo;{suggestion}&rdquo;
             </Button>
           )}
           {saveState === "error" && (
-            <p className="text-xs text-red-600">
+            <p className="text-xs text-red-700">
               Couldn&apos;t save. Tap to try again.
             </p>
           )}

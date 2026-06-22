@@ -1,6 +1,7 @@
 "use client"
 
 import { useState } from "react"
+import { Lightbulb, LoaderCircle, Sparkles } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 
@@ -109,23 +110,24 @@ export function GuidedQuestions({ onDraftReady }: Props) {
       <button
         type="button"
         onClick={openTopic}
-        className="text-sm font-medium text-green-600 hover:underline"
+        className="inline-flex items-center gap-2 text-sm font-medium text-primary hover:underline"
       >
-        💡 Not sure what to write? Get writing prompts →
+        <Lightbulb className="h-4 w-4" />
+        Not sure what to write? Get writing prompts
       </button>
     )
   }
 
   if (step.kind === "topic") {
     return (
-      <section className="rounded-xl border border-green-200 bg-green-50 p-4">
-        <h3 className="text-sm font-semibold text-gray-800">
-          <span aria-hidden>💡 </span>
+      <section className="rounded-[24px] border border-[#e8a05c]/25 bg-[#fff8f1] p-4">
+        <h3 className="flex items-center gap-2 text-sm font-semibold text-foreground">
+          <Lightbulb className="h-4 w-4 text-[#9a5c24]" aria-hidden />
           Get writing prompts
         </h3>
         <label
           htmlFor="guide-topic"
-          className="mt-3 block text-sm font-medium text-gray-700"
+          className="mt-3 block text-sm font-medium text-foreground"
         >
           What happened today? (optional)
         </label>
@@ -139,21 +141,17 @@ export function GuidedQuestions({ onDraftReady }: Props) {
           }
           className="mt-1"
         />
-        <p className="mt-1 text-xs text-gray-500">
+        <p className="mt-1 text-xs text-muted-foreground">
           e.g. &ldquo;work&rdquo;, &ldquo;family dinner&rdquo;,
           &ldquo;I felt tired&rdquo;
         </p>
         {step.error && (
-          <p role="alert" className="mt-2 text-sm text-red-600">
+          <p role="alert" className="mt-2 text-sm text-red-700">
             {step.error}
           </p>
         )}
         <div className="mt-3 flex gap-2">
-          <Button
-            type="button"
-            onClick={() => fetchQuestions(step.topic)}
-            className="bg-green-600 text-white hover:bg-green-700"
-          >
+          <Button type="button" onClick={() => fetchQuestions(step.topic)}>
             Get prompts
           </Button>
           <Button type="button" variant="outline" onClick={reset}>
@@ -169,15 +167,12 @@ export function GuidedQuestions({ onDraftReady }: Props) {
       <section
         role="status"
         aria-live="polite"
-        className="rounded-xl border border-green-200 bg-green-50 p-4"
+        className="rounded-[24px] border border-[#e8a05c]/25 bg-[#fff8f1] p-4"
       >
-        <p className="flex items-center gap-2 text-sm font-medium text-gray-900">
-          <span aria-hidden>💡</span>
+        <p className="flex items-center gap-2 text-sm font-medium text-foreground">
+          <Lightbulb className="h-4 w-4 text-[#9a5c24]" aria-hidden />
           <span>Thinking of questions for you…</span>
-          <span
-            aria-hidden
-            className="inline-block h-4 w-4 animate-spin rounded-full border-2 border-green-200 border-t-green-600"
-          />
+          <LoaderCircle aria-hidden className="h-4 w-4 animate-spin text-[#9a5c24]" />
         </p>
       </section>
     )
@@ -186,9 +181,9 @@ export function GuidedQuestions({ onDraftReady }: Props) {
   if (step.kind === "questions") {
     const hasAnyAnswer = step.answers.some((a) => a.trim().length > 0)
     return (
-      <section className="rounded-xl border border-green-200 bg-green-50 p-4">
-        <h3 className="text-sm font-semibold text-gray-800">
-          <span aria-hidden>💡 </span>
+      <section className="rounded-[24px] border border-[#e8a05c]/25 bg-[#fff8f1] p-4">
+        <h3 className="flex items-center gap-2 text-sm font-semibold text-foreground">
+          <Lightbulb className="h-4 w-4 text-[#9a5c24]" aria-hidden />
           Answer these questions and we&apos;ll write a draft
         </h3>
         <ol className="mt-3 space-y-3">
@@ -196,7 +191,7 @@ export function GuidedQuestions({ onDraftReady }: Props) {
             <li key={i} className="space-y-1">
               <label
                 htmlFor={`guide-answer-${i}`}
-                className="block text-sm text-gray-700"
+                className="block text-sm text-foreground"
               >
                 {i + 1}. {q}
               </label>
@@ -209,13 +204,13 @@ export function GuidedQuestions({ onDraftReady }: Props) {
                   next[i] = e.target.value
                   setStep({ ...step, answers: next, error: null })
                 }}
-                className="min-h-[60px] w-full rounded-md border border-gray-200 bg-white px-3 py-2 text-sm text-gray-700 placeholder:text-gray-500 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-green-600"
+                className="min-h-[70px] w-full rounded-[20px] border border-input bg-white/90 px-3 py-2 text-sm text-foreground placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-[#fff8f1]"
               />
             </li>
           ))}
         </ol>
         {step.error && (
-          <p role="alert" className="mt-3 text-sm text-red-600">
+          <p role="alert" className="mt-3 text-sm text-red-700">
             {step.error}
           </p>
         )}
@@ -224,9 +219,9 @@ export function GuidedQuestions({ onDraftReady }: Props) {
             type="button"
             disabled={!hasAnyAnswer}
             onClick={() => fetchDraft(step.questions, step.answers)}
-            className="bg-green-600 text-white hover:bg-green-700"
           >
-            ✨ Create my draft
+            <Sparkles className="h-4 w-4" />
+            Create my draft
           </Button>
           <Button type="button" variant="outline" onClick={reset}>
             Cancel
@@ -241,15 +236,12 @@ export function GuidedQuestions({ onDraftReady }: Props) {
     <section
       role="status"
       aria-live="polite"
-      className="rounded-xl border border-green-200 bg-green-50 p-4"
+      className="rounded-[24px] border border-[#e8a05c]/25 bg-[#fff8f1] p-4"
     >
-      <p className="flex items-center gap-2 text-sm font-medium text-gray-900">
-        <span aria-hidden>✨</span>
+      <p className="flex items-center gap-2 text-sm font-medium text-foreground">
+        <Sparkles aria-hidden className="h-4 w-4 text-[#9a5c24]" />
         <span>Writing your draft…</span>
-        <span
-          aria-hidden
-          className="inline-block h-4 w-4 animate-spin rounded-full border-2 border-green-200 border-t-green-600"
-        />
+        <LoaderCircle aria-hidden className="h-4 w-4 animate-spin text-[#9a5c24]" />
       </p>
     </section>
   )

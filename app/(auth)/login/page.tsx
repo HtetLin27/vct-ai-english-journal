@@ -3,6 +3,7 @@
 import { useState } from "react"
 import { useRouter } from "next/navigation"
 import Link from "next/link"
+import { ArrowRight } from "lucide-react"
 import { createClient } from "@/lib/supabase/client"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -49,13 +50,15 @@ export default function LoginPage() {
   }
 
   return (
-    <Card className="rounded-xl shadow-sm bg-white border border-gray-200">
+    <Card>
       <CardHeader>
-        <CardTitle className="text-2xl font-semibold text-gray-900">
+        <p className="page-eyebrow">Welcome back</p>
+        <CardTitle className="text-3xl font-semibold text-foreground">
           Welcome back
         </CardTitle>
-        <CardDescription className="text-sm text-gray-500">
-          Sign in to continue writing
+        <CardDescription className="text-sm leading-6 text-muted-foreground">
+          Sign in to return to your writing studio and continue today&apos;s
+          practice.
         </CardDescription>
       </CardHeader>
       <CardContent>
@@ -63,7 +66,7 @@ export default function LoginPage() {
           <div className="space-y-2">
             <Label
               htmlFor="email"
-              className="text-sm font-medium text-gray-700"
+              className="text-sm font-medium"
             >
               Email address
             </Label>
@@ -81,7 +84,7 @@ export default function LoginPage() {
           <div className="space-y-2">
             <Label
               htmlFor="password"
-              className="text-sm font-medium text-gray-700"
+              className="text-sm font-medium"
             >
               Password
             </Label>
@@ -98,7 +101,7 @@ export default function LoginPage() {
           <Button
             type="submit"
             disabled={loading}
-            className="w-full bg-green-600 hover:bg-green-700 text-white"
+            className="w-full"
           >
             {loading ? "Logging in…" : "Log In"}
           </Button>
@@ -106,20 +109,21 @@ export default function LoginPage() {
           {error && (
             <div
               role="alert"
-              className="bg-red-50 border border-red-200 text-red-600 rounded-md px-3 py-2 text-sm"
+              className="rounded-[18px] border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700"
             >
               {error}
             </div>
           )}
         </form>
 
-        <p className="mt-6 text-sm text-gray-500 text-center">
+        <p className="mt-6 text-center text-sm text-muted-foreground">
           Don&apos;t have an account?{" "}
           <Link
             href="/signup"
-            className="text-sm font-medium text-green-600 hover:underline"
+            className="inline-flex items-center gap-1 text-sm font-medium text-primary hover:underline"
           >
-            Sign up →
+            Sign up
+            <ArrowRight className="h-3.5 w-3.5" />
           </Link>
         </p>
       </CardContent>

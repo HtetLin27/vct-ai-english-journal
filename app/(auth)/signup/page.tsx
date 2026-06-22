@@ -3,6 +3,7 @@
 import { useState } from "react"
 import { useRouter } from "next/navigation"
 import Link from "next/link"
+import { ArrowRight, Check, Mail } from "lucide-react"
 import { createClient } from "@/lib/supabase/client"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -71,13 +72,15 @@ export default function SignupPage() {
   }
 
   return (
-    <Card className="rounded-xl shadow-sm bg-white border border-gray-200">
+    <Card>
       <CardHeader>
-        <CardTitle className="text-2xl font-semibold text-gray-900">
+        <p className="page-eyebrow">Start here</p>
+        <CardTitle className="text-3xl font-semibold text-foreground">
           Create your account
         </CardTitle>
-        <CardDescription className="text-sm text-gray-500">
-          Start your English writing journey
+        <CardDescription className="text-sm leading-6 text-muted-foreground">
+          Create a space for daily English writing, feedback, and vocabulary
+          review.
         </CardDescription>
       </CardHeader>
       <CardContent>
@@ -85,7 +88,7 @@ export default function SignupPage() {
           <div className="space-y-2">
             <Label
               htmlFor="email"
-              className="text-sm font-medium text-gray-700"
+              className="text-sm font-medium"
             >
               Email address
             </Label>
@@ -103,7 +106,7 @@ export default function SignupPage() {
           <div className="space-y-2">
             <Label
               htmlFor="password"
-              className="text-sm font-medium text-gray-700"
+              className="text-sm font-medium"
             >
               Password
             </Label>
@@ -121,7 +124,7 @@ export default function SignupPage() {
           <div className="space-y-2">
             <Label
               htmlFor="confirm-password"
-              className="text-sm font-medium text-gray-700"
+              className="text-sm font-medium"
             >
               Confirm password
             </Label>
@@ -138,7 +141,7 @@ export default function SignupPage() {
           <Button
             type="submit"
             disabled={loading || success !== null}
-            className="w-full bg-green-600 hover:bg-green-700 text-white"
+            className="w-full"
           >
             {loading ? "Creating account…" : "Create Account"}
           </Button>
@@ -146,7 +149,7 @@ export default function SignupPage() {
           {error && (
             <div
               role="alert"
-              className="bg-red-50 border border-red-200 text-red-600 rounded-md px-3 py-2 text-sm"
+              className="rounded-[18px] border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700"
             >
               {error}
             </div>
@@ -155,29 +158,32 @@ export default function SignupPage() {
           {success === "redirecting" && (
             <div
               role="status"
-              className="bg-green-50 border border-green-200 text-green-600 rounded-md px-3 py-2 text-sm"
+              className="inline-flex items-center gap-2 rounded-[18px] border border-emerald-200 bg-emerald-50 px-3 py-2 text-sm text-emerald-700"
             >
-              ✅ Account created! Redirecting…
+              <Check className="h-4 w-4" />
+              Account created! Redirecting…
             </div>
           )}
 
           {success === "confirm_email" && (
             <div
               role="status"
-              className="bg-green-50 border border-green-200 text-green-600 rounded-md px-3 py-2 text-sm"
+              className="inline-flex items-center gap-2 rounded-[18px] border border-emerald-200 bg-emerald-50 px-3 py-2 text-sm text-emerald-700"
             >
-              📧 Check your email to confirm your account, then log in.
+              <Mail className="h-4 w-4" />
+              Check your email to confirm your account, then log in.
             </div>
           )}
         </form>
 
-        <p className="mt-6 text-sm text-gray-500 text-center">
+        <p className="mt-6 text-center text-sm text-muted-foreground">
           Already have an account?{" "}
           <Link
             href="/login"
-            className="text-sm font-medium text-green-600 hover:underline"
+            className="inline-flex items-center gap-1 text-sm font-medium text-primary hover:underline"
           >
-            Log in →
+            Log in
+            <ArrowRight className="h-3.5 w-3.5" />
           </Link>
         </p>
       </CardContent>

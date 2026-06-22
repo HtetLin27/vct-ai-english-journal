@@ -1,16 +1,10 @@
 import Link from "next/link"
+import { ChevronLeft, PencilLine, RefreshCw } from "lucide-react"
 import { createServerClient } from "@/lib/supabase/server"
 import { Button } from "@/components/ui/button"
 import { DeleteEntryButton } from "@/components/journal/delete-entry-button"
 import { AiFeedbackPanel } from "@/components/ai/ai-feedback-panel"
-
-const MOOD_META: Record<string, { emoji: string; label: string }> = {
-  happy: { emoji: "😊", label: "happy" },
-  sad: { emoji: "😢", label: "sad" },
-  neutral: { emoji: "😐", label: "neutral" },
-  excited: { emoji: "🤩", label: "excited" },
-  tired: { emoji: "😴", label: "tired" },
-}
+import { MOOD_META, type MoodValue } from "@/lib/moods"
 
 const MONTHS = [
   "January",
@@ -78,14 +72,15 @@ export default async function ViewEntryPage({ params }: PageProps) {
     return (
       <div
         role="alert"
-        className="rounded-md border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-600"
+        className="rounded-[22px] border border-red-200 bg-red-50/90 px-4 py-3 text-sm text-red-700"
       >
         <p>Could not load this entry.</p>
         <a
           href={`/journal/${params.id}`}
-          className="mt-2 inline-block text-sm font-medium text-red-700 hover:underline"
+          className="mt-3 inline-flex items-center gap-2 text-sm font-medium text-red-800 hover:underline"
         >
-          ↻ Try again
+          <RefreshCw className="h-4 w-4" />
+          Try again
         </a>
       </div>
     )
@@ -93,21 +88,22 @@ export default async function ViewEntryPage({ params }: PageProps) {
 
   if (!entry) {
     return (
-      <div className="py-16 text-center">
-        <p className="mb-4 text-lg font-semibold text-gray-900">
+      <div className="rounded-[28px] border border-white/80 bg-white/78 py-16 text-center shadow-[0_18px_42px_-30px_rgba(23,50,77,0.45)]">
+        <p className="mb-4 font-display text-3xl font-semibold tracking-[-0.05em] text-foreground">
           Entry not found.
         </p>
         <Link
           href="/journal"
-          className="text-sm font-medium text-green-600 hover:underline"
+          className="inline-flex items-center gap-2 text-sm font-medium text-primary hover:underline"
         >
-          ← Back to My Journal
+          <ChevronLeft className="h-4 w-4" />
+          Back to My Journal
         </Link>
       </div>
     )
   }
 
-  const moodMeta = entry.mood ? MOOD_META[entry.mood] ?? null : null
+  const moodMeta = entry.mood ? MOOD_META[entry.mood as MoodValue] ?? null : null
   const tags = entry.tags ?? []
 
   return (
@@ -115,21 +111,25 @@ export default async function ViewEntryPage({ params }: PageProps) {
       <div className="mb-2">
         <Link
           href="/journal"
-          className="text-sm font-medium text-green-600 hover:underline"
+          className="inline-flex items-center gap-2 text-sm font-medium text-primary hover:underline"
         >
-          ← My Journal
+          <ChevronLeft className="h-4 w-4" />
+          My Journal
         </Link>
       </div>
 
-      <h1 className="text-3xl font-bold text-gray-900">{entry.title}</h1>
+      <p className="page-eyebrow">Entry detail</p>
+      <h1 className="mt-2 font-display text-4xl font-semibold tracking-[-0.05em] text-foreground md:text-5xl">
+        {entry.title}
+      </h1>
 
-      <div className="mt-2 flex flex-wrap items-center gap-x-2 gap-y-1 text-sm text-gray-500">
+      <div className="mt-4 flex flex-wrap items-center gap-x-2 gap-y-2 text-sm text-muted-foreground">
         <span>{formatLongDate(entry.entry_date)}</span>
         {moodMeta && (
           <>
             <span aria-hidden>·</span>
-            <span className="inline-flex items-center gap-1 text-gray-600">
-              <span aria-hidden>{moodMeta.emoji}</span>
+            <span className="inline-flex items-center gap-1.5 rounded-full bg-secondary px-2.5 py-1 text-secondary-foreground">
+              <moodMeta.Icon className={`h-4 w-4 ${moodMeta.tone}`} aria-hidden />
               <span>{moodMeta.label}</span>
             </span>
           </>
@@ -145,7 +145,7 @@ export default async function ViewEntryPage({ params }: PageProps) {
           {tags.map((tag) => (
             <span
               key={tag}
-              className="rounded-full bg-green-100 px-2 py-0.5 text-xs text-green-800"
+              className="rounded-full bg-[#f8efe5] px-2.5 py-1 text-xs text-[#9a5c24]"
             >
               {tag}
             </span>
@@ -153,17 +153,20 @@ export default async function ViewEntryPage({ params }: PageProps) {
         </div>
       )}
 
-      <hr className="my-6 border-gray-200" />
+      <hr className="soft-divider my-6" />
 
-      <div className="whitespace-pre-wrap text-base leading-7 text-gray-700">
+      <div className="rounded-[28px] border border-white/80 bg-white/76 p-6 text-base leading-8 text-foreground shadow-[0_18px_42px_-30px_rgba(23,50,77,0.45)] whitespace-pre-wrap">
         {entry.body}
       </div>
 
-      <hr className="my-6 border-gray-200" />
+      <hr className="soft-divider my-6" />
 
       <div className="flex flex-wrap gap-3">
         <Button asChild variant="outline">
-          <Link href={`/journal/${entry.id}/edit`}>✏ Edit</Link>
+          <Link href={`/journal/${entry.id}/edit`}>
+            <PencilLine className="h-4 w-4" />
+            Edit
+          </Link>
         </Button>
         <DeleteEntryButton entryId={entry.id} />
       </div>

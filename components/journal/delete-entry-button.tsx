@@ -2,6 +2,7 @@
 
 import { useState } from "react"
 import { useRouter } from "next/navigation"
+import { Trash2 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import {
   AlertDialog,
@@ -50,9 +51,10 @@ export function DeleteEntryButton({ entryId }: Props) {
       <AlertDialogTrigger asChild>
         <Button
           variant="outline"
-          className="border-red-200 text-red-600 hover:bg-red-50 hover:text-red-700"
+          className="border-red-200 text-red-700 hover:bg-red-50 hover:text-red-800"
         >
-          🗑 Delete
+          <Trash2 className="h-4 w-4" />
+          Delete
         </Button>
       </AlertDialogTrigger>
       <AlertDialogContent>

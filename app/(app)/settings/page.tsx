@@ -1,6 +1,7 @@
 "use client"
 
 import { useEffect, useState } from "react"
+import { Check, Sparkles, UserCircle2 } from "lucide-react"
 import { LogoutButton } from "@/components/shared/logout-button"
 import { Switch } from "@/components/ui/switch"
 import { createClient } from "@/lib/supabase/client"
@@ -84,21 +85,37 @@ export default function SettingsPage() {
 
   return (
     <>
-      <h1 className="text-3xl font-bold text-gray-900">Settings</h1>
+      <p className="page-eyebrow">Preferences</p>
+      <h1 className="mt-2 font-display text-4xl font-semibold tracking-[-0.05em] text-foreground md:text-5xl">
+        Settings
+      </h1>
 
-      <section className="mt-6 rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
-        <h2 className="text-xl font-semibold text-gray-800">AI Features</h2>
-        <hr className="my-4 border-gray-200" />
+      <section className="mt-6 rounded-[28px] border border-white/80 bg-white/78 p-6 shadow-[0_18px_42px_-30px_rgba(23,50,77,0.45)]">
+        <div className="flex items-start gap-3">
+          <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-[#fff2e2] text-[#9a5c24]">
+            <Sparkles className="h-5 w-5" />
+          </div>
+          <div>
+            <h2 className="font-display text-3xl font-semibold tracking-[-0.04em] text-foreground">
+              AI features
+            </h2>
+            <p className="mt-1 text-sm text-muted-foreground">
+              Control writing prompts, grammar feedback, and vocabulary
+              suggestions.
+            </p>
+          </div>
+        </div>
+        <hr className="soft-divider my-5" />
 
-        <div className="flex items-start justify-between gap-4">
+        <div className="flex items-start justify-between gap-4 rounded-[22px] bg-[#f6faf7] p-4">
           <div>
             <label
               htmlFor="ai-enabled"
-              className="block text-base font-semibold text-gray-800"
+              className="block text-base font-semibold text-foreground"
             >
               AI English Teacher
             </label>
-            <p className="mt-1 text-sm text-gray-500">
+            <p className="mt-1 text-sm text-muted-foreground">
               Grammar checking, vocabulary suggestions, and writing prompts.
             </p>
           </div>
@@ -111,20 +128,21 @@ export default function SettingsPage() {
           />
         </div>
 
-        <p className="mt-4 text-sm text-gray-500">
+        <p className="mt-4 text-sm text-muted-foreground">
           When AI is off, the &quot;Check my English&quot; button will not
           appear on your entries.
         </p>
 
         {justSaved && (
-          <p className="mt-3 text-sm font-medium text-green-600" role="status">
-            ✓ Saved
+          <p className="mt-3 inline-flex items-center gap-2 text-sm font-medium text-emerald-700" role="status">
+            <Check className="h-4 w-4" />
+            Saved
           </p>
         )}
         {saveError && (
           <div
             role="alert"
-            className="mt-3 rounded-md border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-600"
+            className="mt-3 rounded-[18px] border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700"
           >
             {saveError}
           </div>
@@ -132,7 +150,7 @@ export default function SettingsPage() {
         {state.status === "load_error" && (
           <div
             role="alert"
-            className="mt-3 rounded-md border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-600"
+            className="mt-3 rounded-[18px] border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700"
           >
             Could not load your settings. Please refresh the page.
           </div>
@@ -140,12 +158,19 @@ export default function SettingsPage() {
       </section>
 
       <section className="mt-8">
-        <h2 className="text-2xl font-semibold text-gray-900">Account</h2>
-        <div className="mt-4 rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
+        <h2 className="font-display text-3xl font-semibold tracking-[-0.04em] text-foreground">
+          Account
+        </h2>
+        <div className="mt-4 rounded-[28px] border border-white/80 bg-white/78 p-6 shadow-[0_18px_42px_-30px_rgba(23,50,77,0.45)]">
           <div className="flex items-center justify-between gap-4">
-            <span className="truncate text-sm text-gray-700">
+            <div className="flex min-w-0 items-center gap-3">
+              <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-secondary text-secondary-foreground">
+                <UserCircle2 className="h-5 w-5" />
+              </div>
+              <span className="truncate text-sm text-foreground">
               {email ?? "Loading…"}
-            </span>
+              </span>
+            </div>
             <LogoutButton />
           </div>
         </div>

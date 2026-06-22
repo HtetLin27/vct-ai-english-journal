@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useState } from "react"
 import Link from "next/link"
+import { NotebookPen, Search, SlidersHorizontal } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { JournalCard } from "@/components/journal/journal-card"
 import { SearchBar } from "@/components/journal/search-bar"
@@ -73,10 +74,22 @@ export default function JournalListPage() {
 
   return (
     <>
-      <div className="mb-6 flex items-center justify-between gap-4">
-        <h1 className="text-3xl font-bold text-gray-900">My Journal</h1>
-        <Button asChild className="bg-green-600 text-white hover:bg-green-700">
-          <Link href="/journal/new">✏ New Entry</Link>
+      <div className="mb-8 flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
+        <div>
+          <p className="page-eyebrow">Journal archive</p>
+          <h1 className="mt-2 font-display text-4xl font-semibold tracking-[-0.05em] text-foreground md:text-5xl">
+            My journal
+          </h1>
+          <p className="mt-3 max-w-2xl text-sm leading-6 text-muted-foreground md:text-base">
+            Search old entries, trace your moods, and revisit how your writing
+            has changed over time.
+          </p>
+        </div>
+        <Button asChild>
+          <Link href="/journal/new">
+            <NotebookPen className="h-4 w-4" />
+            New entry
+          </Link>
         </Button>
       </div>
 
@@ -102,7 +115,7 @@ export default function JournalListPage() {
       {hasError ? (
         <div
           role="alert"
-          className="rounded-md border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-600"
+          className="rounded-[22px] border border-red-200 bg-red-50/90 px-4 py-3 text-sm text-red-700"
         >
           Could not load entries. Please refresh the page.
         </div>
@@ -111,46 +124,44 @@ export default function JournalListPage() {
           {[0, 1, 2, 3, 4].map((i) => (
             <div
               key={i}
-              className="h-20 animate-pulse rounded-xl border border-gray-200 bg-gray-100"
+              className="h-24 animate-pulse rounded-[24px] border border-white/80 bg-white/70"
             />
           ))}
         </div>
       ) : entries.length === 0 && !filtersActive ? (
-        <div className="py-16 text-center">
-          <div className="mb-4 text-5xl" aria-hidden>
-            📓
+        <div className="rounded-[28px] border border-white/80 bg-white/78 py-16 text-center shadow-[0_18px_42px_-30px_rgba(23,50,77,0.45)]">
+          <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-[22px] bg-secondary text-secondary-foreground">
+            <NotebookPen className="h-7 w-7" />
           </div>
-          <p className="mb-1 text-lg font-semibold text-gray-900">
+          <p className="mb-1 font-display text-3xl font-semibold tracking-[-0.05em] text-foreground">
             You haven&apos;t written anything yet.
           </p>
-          <p className="mb-6 text-sm text-gray-500">
+          <p className="mb-6 text-sm text-muted-foreground">
             Write your first journal entry and start your journey!
           </p>
-          <Button
-            asChild
-            className="bg-green-600 text-white hover:bg-green-700"
-          >
+          <Button asChild>
             <Link href="/journal/new">Write First Entry</Link>
           </Button>
         </div>
       ) : entries.length === 0 ? (
-        <div className="py-16 text-center">
-          <div className="mb-4 text-5xl" aria-hidden>
-            🔍
+        <div className="rounded-[28px] border border-white/80 bg-white/78 py-16 text-center shadow-[0_18px_42px_-30px_rgba(23,50,77,0.45)]">
+          <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-[22px] bg-[#fff2e2] text-[#9a5c24]">
+            <Search className="h-7 w-7" />
           </div>
-          <p className="mb-1 text-lg font-semibold text-gray-900">
+          <p className="mb-1 font-display text-3xl font-semibold tracking-[-0.05em] text-foreground">
             No entries match your search.
           </p>
-          <p className="mb-6 text-sm text-gray-500">
+          <p className="mb-6 text-sm text-muted-foreground">
             Try different keywords or clear the filters.
           </p>
           <Button variant="outline" onClick={clearFilters}>
+            <SlidersHorizontal className="h-4 w-4" />
             Clear Filters
           </Button>
         </div>
       ) : (
         <>
-          <p className="mb-4 text-sm text-gray-500">
+          <p className="mb-4 font-mono text-xs uppercase tracking-[0.18em] text-muted-foreground">
             {entries.length} {entries.length === 1 ? "entry" : "entries"}
           </p>
           <div className="space-y-3">
