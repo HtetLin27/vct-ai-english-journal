@@ -7,7 +7,7 @@ import {
   EntryForm,
   type EntryFormValues,
 } from "@/components/journal/entry-form"
-import { type MoodValue } from "@/components/journal/mood-selector"
+import { type MoodValue } from "@/lib/moods"
 
 const ALLOWED_MOODS: ReadonlyArray<MoodValue> = [
   "happy",
