@@ -62,7 +62,7 @@ export default function VocabularyPage() {
           : `${words.length} ${words.length === 1 ? "word" : "words"} saved`}
       </p>
 
-      <div className="mt-6">
+      <div className="mt-5">
         <SearchBar
           value={q}
           onChange={setQ}
@@ -80,23 +80,20 @@ export default function VocabularyPage() {
         </div>
       ) : words === null ? (
         <div
-          className="mt-6 grid grid-cols-1 gap-4 md:grid-cols-2"
+          className="mt-5 grid grid-cols-1 gap-3 md:grid-cols-2 xl:grid-cols-3"
           aria-busy="true"
           aria-label="Loading vocabulary"
         >
           {[0, 1, 2, 3].map((i) => (
-            <div
-              key={i}
-              className="h-36 animate-pulse rounded-[24px] border border-white/80 bg-white/70"
-            />
+            <div key={i} className="compact-card h-32 animate-pulse" />
           ))}
         </div>
       ) : words.length === 0 && !searching ? (
-        <div className="rounded-[28px] border border-white/80 bg-white/78 py-16 text-center shadow-[0_18px_42px_-30px_rgba(23,50,77,0.45)]">
-          <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-[22px] bg-secondary text-secondary-foreground">
-            <BookMarked className="h-7 w-7" />
+        <div className="compact-card py-12 text-center">
+          <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-[18px] bg-secondary text-secondary-foreground">
+            <BookMarked className="h-6 w-6" />
           </div>
-          <p className="mb-1 font-display text-3xl font-semibold tracking-[-0.05em] text-foreground">
+          <p className="mb-1 font-display text-[2rem] font-semibold tracking-[-0.05em] text-foreground">
             Your vocabulary book is empty.
           </p>
           <p className="text-sm text-muted-foreground">
@@ -105,11 +102,11 @@ export default function VocabularyPage() {
           </p>
         </div>
       ) : words.length === 0 ? (
-        <div className="rounded-[28px] border border-white/80 bg-white/78 py-16 text-center shadow-[0_18px_42px_-30px_rgba(23,50,77,0.45)]">
-          <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-[22px] bg-[#fff2e2] text-[#9a5c24]">
-            <Search className="h-7 w-7" />
+        <div className="compact-card py-12 text-center">
+          <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-[18px] bg-[#fff2e2] text-[#9a5c24]">
+            <Search className="h-6 w-6" />
           </div>
-          <p className="mb-1 font-display text-3xl font-semibold tracking-[-0.05em] text-foreground">
+          <p className="mb-1 font-display text-[2rem] font-semibold tracking-[-0.05em] text-foreground">
             No words match your search.
           </p>
           <div className="mt-4">
@@ -119,7 +116,7 @@ export default function VocabularyPage() {
           </div>
         </div>
       ) : (
-        <div className="mt-6 grid grid-cols-1 gap-4 md:grid-cols-2">
+        <div className="mt-5 grid grid-cols-1 gap-3 md:grid-cols-2 xl:grid-cols-3">
           {words.map((w) => (
             <WordCard
               key={w.id}

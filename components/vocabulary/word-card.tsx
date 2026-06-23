@@ -53,32 +53,45 @@ export function WordCard({
   }
 
   return (
-    <div className="relative rounded-[24px] border border-white/80 bg-white/78 p-5 shadow-[0_18px_42px_-30px_rgba(23,50,77,0.45)]">
-      <h3 className="font-display text-3xl font-semibold tracking-[-0.05em] text-foreground">
-        {word}
-      </h3>
-      <p className="mt-2 text-sm leading-6 text-foreground">{definition}</p>
-      {definitionMy && (
-        <p
-          lang="my"
-          className="mt-1 text-sm leading-relaxed text-muted-foreground"
+    <div className="compact-card flex h-full flex-col p-4">
+      <div className="flex items-start justify-between gap-3">
+        <div className="min-w-0">
+          <p className="font-mono text-[0.62rem] uppercase tracking-[0.24em] text-muted-foreground">
+            Saved word
+          </p>
+          <h3 className="mt-2 font-display text-[1.85rem] font-semibold tracking-[-0.05em] text-foreground">
+            {word}
+          </h3>
+        </div>
+        <button
+          type="button"
+          onClick={handleDelete}
+          disabled={deleting}
+          aria-label={`Delete ${word}`}
+          className="rounded-full border border-red-100 bg-red-50/85 p-1.5 text-red-500 transition-colors hover:text-red-700 disabled:opacity-50"
         >
-          {definitionMy}
+          <Trash2 className="h-4 w-4" aria-hidden />
+        </button>
+      </div>
+
+      <div className="mt-3 flex-1 space-y-2">
+        <p className="text-sm leading-6 text-foreground">{definition}</p>
+        {definitionMy && (
+          <p
+            lang="my"
+            className="text-sm leading-relaxed text-muted-foreground"
+          >
+            {definitionMy}
+          </p>
+        )}
+      </div>
+
+      <div className="mt-4 rounded-[16px] bg-[#f7f4ef] px-3 py-3">
+        <p className="line-clamp-3 text-sm italic leading-6 text-[#6f7681]">
+          &ldquo;{example_sentence}&rdquo;
         </p>
-      )}
-      <hr className="soft-divider my-4" />
-      <p className="pr-8 text-sm italic leading-6 text-muted-foreground">
-        &ldquo;{example_sentence}&rdquo;
-      </p>
-      <button
-        type="button"
-        onClick={handleDelete}
-        disabled={deleting}
-        aria-label={`Delete ${word}`}
-        className="absolute bottom-4 right-4 rounded-full border border-red-100 bg-red-50/80 p-2 text-red-500 transition-colors hover:text-red-700 disabled:opacity-50"
-      >
-        <Trash2 className="h-4 w-4" aria-hidden />
-      </button>
+      </div>
+
       {error && (
         <p role="alert" className="mt-3 text-xs text-red-700">
           {error}

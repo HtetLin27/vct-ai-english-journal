@@ -57,8 +57,8 @@ export function FilterBar({
   }, [tagDraft, tag, onTagChange])
 
   return (
-    <div className="rounded-[24px] border border-white/80 bg-white/70 p-4 shadow-[0_18px_42px_-34px_rgba(23,50,77,0.45)]">
-      <div className="mb-3 flex items-center justify-between gap-4">
+    <div className="compact-card p-3.5">
+      <div className="mb-2.5 flex items-center justify-between gap-4">
         <div>
           <p className="page-eyebrow">Refine entries</p>
           <p className="text-sm text-muted-foreground">
@@ -66,7 +66,7 @@ export function FilterBar({
           </p>
         </div>
       </div>
-      <div className="flex flex-wrap gap-3">
+      <div className="flex flex-wrap gap-2.5">
         <div className="flex flex-col gap-1">
           <Label
             id="filter-mood-label"

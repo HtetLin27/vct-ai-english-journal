@@ -10,9 +10,9 @@ const config: Config = {
   theme: {
     extend: {
       fontFamily: {
-        sans: ["var(--font-geist-sans)", "system-ui", "sans-serif"],
+        sans: ["var(--font-plus-jakarta-sans)", "system-ui", "sans-serif"],
         mono: ["var(--font-geist-mono)", "monospace"],
-        display: ["var(--font-display)"],
+        display: ["var(--font-plus-jakarta-sans)", "system-ui", "sans-serif"],
       },
       colors: {
         background: "var(--background)",
@@ -54,5 +54,5 @@ const config: Config = {
     },
   },
   plugins: [require("tailwindcss-animate")],
-};
+}
 export default config;

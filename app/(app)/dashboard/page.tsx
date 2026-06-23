@@ -92,8 +92,8 @@ export default async function DashboardPage() {
 
   return (
     <>
-      <div className="mb-8 grid gap-5 md:grid-cols-[1.3fr_0.7fr]">
-        <section className="rounded-[28px] bg-primary px-6 py-7 text-primary-foreground shadow-[0_28px_70px_-34px_rgba(23,50,77,0.78)]">
+      <div className="mb-7 grid gap-4 md:grid-cols-[1.2fr_0.8fr]">
+        <section className="rounded-[24px] bg-primary px-5 py-6 text-primary-foreground shadow-[0_28px_70px_-34px_rgba(23,50,77,0.78)] md:px-6">
           <p className="font-mono text-[0.72rem] uppercase tracking-[0.32em] text-white/70">
             Writing studio
           </p>
@@ -104,7 +104,7 @@ export default async function DashboardPage() {
             Keep your English moving with one focused entry at a time. The
             dashboard shows your rhythm, recent writing, and your next step.
           </p>
-          <div className="mt-6">
+          <div className="mt-5">
             <Button
               asChild
               variant="secondary"
@@ -118,17 +118,17 @@ export default async function DashboardPage() {
           </div>
         </section>
 
-        <section className="rounded-[28px] border border-white/80 bg-white/72 px-6 py-7 shadow-[0_18px_42px_-30px_rgba(23,50,77,0.45)]">
+        <section className="compact-card px-5 py-5 md:px-6">
           <p className="page-eyebrow">Today&apos;s note</p>
-          <div className="mt-4 flex items-start gap-3">
-            <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-[#fff2e2] text-[#9a5c24]">
-              <Sparkles className="h-5 w-5" />
+          <div className="mt-3 flex items-start gap-3">
+            <div className="flex h-10 w-10 items-center justify-center rounded-[14px] bg-[#fff2e2] text-[#9a5c24]">
+              <Sparkles className="h-4 w-4" />
             </div>
             <div>
-              <p className="font-display text-2xl font-semibold tracking-[-0.04em] text-foreground">
+              <p className="font-display text-[1.55rem] font-semibold tracking-[-0.04em] text-foreground">
                 Small entries count.
               </p>
-              <p className="mt-2 text-sm leading-6 text-muted-foreground">
+              <p className="mt-1.5 text-sm leading-6 text-muted-foreground">
                 A clear paragraph is better than waiting for a perfect essay.
               </p>
             </div>
@@ -137,7 +137,7 @@ export default async function DashboardPage() {
       </div>
 
       {!isFirstTime && (
-        <div className="mb-6 flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+        <div className="mb-5 flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
           <p className="max-w-2xl text-sm leading-6 text-muted-foreground md:text-base">
             Keep up your great work. Your streak, word count, and recent entries
             are all moving in the right direction.
@@ -152,7 +152,7 @@ export default async function DashboardPage() {
       )}
 
       {isFirstTime ? (
-        <div className="rounded-[28px] border border-white/80 bg-white/78 px-6 py-16 text-center shadow-[0_24px_60px_-34px_rgba(23,50,77,0.45)]">
+        <div className="compact-card px-6 py-12 text-center">
           <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-[22px] bg-secondary text-secondary-foreground">
             <NotebookText className="h-7 w-7" />
           </div>
@@ -174,7 +174,7 @@ export default async function DashboardPage() {
         </div>
       ) : (
         <>
-          <section className="grid grid-cols-1 gap-4 md:grid-cols-3">
+          <section className="grid grid-cols-1 gap-3 md:grid-cols-3">
             <StatsCard icon={<Flame className="h-5 w-5" />} value={currentStreak} label="Day streak" />
             <StatsCard
               icon={<NotebookPen className="h-5 w-5" />}
@@ -184,7 +184,7 @@ export default async function DashboardPage() {
             <StatsCard icon={<NotebookText className="h-5 w-5" />} value={totalEntries} label="Entries saved" />
           </section>
 
-          <section className="mt-10">
+          <section className="mt-8">
             <div className="flex items-end justify-between gap-4">
               <div>
                 <p className="page-eyebrow">Recent work</p>
@@ -200,7 +200,7 @@ export default async function DashboardPage() {
                 <ArrowRight className="h-4 w-4" />
               </Link>
             </div>
-            <div className="mt-5 space-y-3">
+            <div className="mt-4 space-y-2">
               {entries.map((entry) => (
                 <JournalCard
                   key={entry.id}

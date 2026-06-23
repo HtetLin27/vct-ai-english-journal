@@ -1,6 +1,7 @@
 import Link from "next/link"
 import { ArrowUpRight } from "lucide-react"
 import { MOOD_META, type MoodValue } from "@/lib/moods"
+import { cn } from "@/lib/utils"
 
 const MONTH_ABBR = [
   "Jan",
@@ -42,52 +43,78 @@ export function JournalCard({
   variant = "full",
 }: Props) {
   const moodMeta = mood ? MOOD_META[mood as MoodValue] ?? null : null
+  const tagsToShow = variant === "full" ? tags.slice(0, 2) : []
+  const remainingTagCount = Math.max(tags.length - tagsToShow.length, 0)
 
   return (
     <Link
       href={`/journal/${id}`}
-      className="block rounded-[24px] border border-white/80 bg-white/80 p-5 shadow-[0_18px_48px_-34px_rgba(23,50,77,0.45)] transition-all hover:-translate-y-0.5 hover:shadow-[0_24px_56px_-34px_rgba(23,50,77,0.52)]"
+      className="compact-card group relative block overflow-hidden p-4 transition-transform duration-200 hover:-translate-y-0.5"
     >
-      <div className="flex items-start justify-between gap-4">
-        <h3 className="line-clamp-1 font-display text-2xl font-semibold tracking-[-0.04em] text-foreground">
-          {title}
-        </h3>
-        <span className="shrink-0 font-mono text-xs uppercase tracking-[0.18em] text-muted-foreground">
+      {moodMeta && (
+        <span
+          aria-hidden
+          className={cn("absolute inset-y-0 left-0 w-1.5", moodMeta.accent)}
+        />
+      )}
+
+      <div className="flex items-start justify-between gap-3 pl-2">
+        <div className="min-w-0">
+          <h3
+            className={cn(
+              "line-clamp-1 font-display font-semibold tracking-[-0.04em] text-foreground",
+              variant === "compact" ? "text-[1.25rem]" : "text-[1.35rem] md:text-[1.45rem]"
+            )}
+          >
+            {title}
+          </h3>
+        </div>
+        <span className="shrink-0 rounded-full bg-[#eef3ef] px-2 py-1 font-mono text-[0.62rem] uppercase tracking-[0.18em] text-muted-foreground">
           {formatEntryDate(entry_date)}
         </span>
       </div>
 
-      {variant === "full" && (
-        <div className="mt-2 flex items-center justify-between gap-4">
-          <div className="flex flex-wrap items-center gap-2">
-            {moodMeta && (
-              <span className="inline-flex items-center gap-1.5 rounded-full bg-secondary px-2.5 py-1 text-sm text-secondary-foreground">
-                <moodMeta.Icon className={`h-4 w-4 ${moodMeta.tone}`} aria-hidden />
-                <span>{moodMeta.label}</span>
-              </span>
-            )}
-            {tags.map((tag) => (
+      <div className="mt-3 flex items-center justify-between gap-3 pl-2">
+        <div className="flex min-w-0 flex-wrap items-center gap-1.5">
+          {moodMeta && (
+            <span
+              className={cn(
+                "inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-[0.72rem] font-medium",
+                moodMeta.chip
+              )}
+            >
+              <moodMeta.Icon className={`h-3.5 w-3.5 ${moodMeta.tone}`} aria-hidden />
+              <span>{moodMeta.label}</span>
+            </span>
+          )}
+
+          {variant === "full" &&
+            tagsToShow.map((tag) => (
               <span
                 key={tag}
-                className="rounded-full bg-[#f8efe5] px-2.5 py-1 text-xs text-[#9a5c24]"
+                className="rounded-full bg-[#f8efe5] px-2.5 py-1 text-[0.65rem] font-medium uppercase tracking-[0.08em] text-[#9a5c24]"
               >
                 {tag}
               </span>
             ))}
-            <span className="font-mono text-xs uppercase tracking-[0.14em] text-muted-foreground">
+
+          {variant === "full" && remainingTagCount > 0 && (
+            <span className="rounded-full bg-[#eef3ef] px-2.5 py-1 text-[0.65rem] font-medium uppercase tracking-[0.08em] text-muted-foreground">
+              +{remainingTagCount}
+            </span>
+          )}
+
+          {variant === "full" && (
+            <span className="rounded-full bg-[#eef3ef] px-2.5 py-1 font-mono text-[0.62rem] uppercase tracking-[0.16em] text-muted-foreground">
               {word_count} {word_count === 1 ? "word" : "words"}
             </span>
-          </div>
-          <ArrowUpRight className="h-4 w-4 shrink-0 text-muted-foreground" aria-hidden />
+          )}
         </div>
-      )}
 
-      {variant === "compact" && moodMeta && (
-        <div className="mt-3 inline-flex items-center gap-1.5 rounded-full bg-secondary px-2.5 py-1 text-sm text-secondary-foreground">
-          <moodMeta.Icon className={`h-4 w-4 ${moodMeta.tone}`} aria-hidden />
-          <span>{moodMeta.label}</span>
-        </div>
-      )}
+        <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-[#f4f7f2] text-muted-foreground transition-colors duration-200 group-hover:bg-[#e8a05c]/18 group-hover:text-foreground">
+          <ArrowUpRight className="h-3.5 w-3.5" aria-hidden />
+        </span>
+      </div>
     </Link>
   )
 }

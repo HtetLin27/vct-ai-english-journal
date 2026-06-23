@@ -74,7 +74,7 @@ export default function JournalListPage() {
 
   return (
     <>
-      <div className="mb-8 flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
+      <div className="mb-7 flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
         <div>
           <p className="page-eyebrow">Journal archive</p>
           <h1 className="mt-2 font-display text-4xl font-semibold tracking-[-0.05em] text-foreground md:text-5xl">
@@ -93,7 +93,7 @@ export default function JournalListPage() {
         </Button>
       </div>
 
-      <div className="mb-6 space-y-3">
+      <div className="mb-5 space-y-3">
         <SearchBar
           value={q}
           onChange={setQ}
@@ -120,20 +120,17 @@ export default function JournalListPage() {
           Could not load entries. Please refresh the page.
         </div>
       ) : entries === null ? (
-        <div className="space-y-3" aria-busy="true" aria-label="Loading entries">
+        <div className="space-y-2" aria-busy="true" aria-label="Loading entries">
           {[0, 1, 2, 3, 4].map((i) => (
-            <div
-              key={i}
-              className="h-24 animate-pulse rounded-[24px] border border-white/80 bg-white/70"
-            />
+            <div key={i} className="compact-card h-20 animate-pulse" />
           ))}
         </div>
       ) : entries.length === 0 && !filtersActive ? (
-        <div className="rounded-[28px] border border-white/80 bg-white/78 py-16 text-center shadow-[0_18px_42px_-30px_rgba(23,50,77,0.45)]">
-          <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-[22px] bg-secondary text-secondary-foreground">
-            <NotebookPen className="h-7 w-7" />
+        <div className="compact-card py-12 text-center">
+          <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-[18px] bg-secondary text-secondary-foreground">
+            <NotebookPen className="h-6 w-6" />
           </div>
-          <p className="mb-1 font-display text-3xl font-semibold tracking-[-0.05em] text-foreground">
+          <p className="mb-1 font-display text-[2rem] font-semibold tracking-[-0.05em] text-foreground">
             You haven&apos;t written anything yet.
           </p>
           <p className="mb-6 text-sm text-muted-foreground">
@@ -144,11 +141,11 @@ export default function JournalListPage() {
           </Button>
         </div>
       ) : entries.length === 0 ? (
-        <div className="rounded-[28px] border border-white/80 bg-white/78 py-16 text-center shadow-[0_18px_42px_-30px_rgba(23,50,77,0.45)]">
-          <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-[22px] bg-[#fff2e2] text-[#9a5c24]">
-            <Search className="h-7 w-7" />
+        <div className="compact-card py-12 text-center">
+          <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-[18px] bg-[#fff2e2] text-[#9a5c24]">
+            <Search className="h-6 w-6" />
           </div>
-          <p className="mb-1 font-display text-3xl font-semibold tracking-[-0.05em] text-foreground">
+          <p className="mb-1 font-display text-[2rem] font-semibold tracking-[-0.05em] text-foreground">
             No entries match your search.
           </p>
           <p className="mb-6 text-sm text-muted-foreground">
@@ -161,10 +158,10 @@ export default function JournalListPage() {
         </div>
       ) : (
         <>
-          <p className="mb-4 font-mono text-xs uppercase tracking-[0.18em] text-muted-foreground">
+          <p className="mb-3 font-mono text-xs uppercase tracking-[0.18em] text-muted-foreground">
             {entries.length} {entries.length === 1 ? "entry" : "entries"}
           </p>
-          <div className="space-y-3">
+          <div className="space-y-2">
             {entries.map((e) => (
               <JournalCard
                 key={e.id}
