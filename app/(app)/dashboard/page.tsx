@@ -1,4 +1,14 @@
 import Link from "next/link"
+import {
+  ArrowRight,
+  Flame,
+  NotebookPen,
+  NotebookText,
+  Pencil,
+  PenLine,
+  RotateCcw,
+  Sprout,
+} from "lucide-react"
 import { createServerClient } from "@/lib/supabase/server"
 import { StatsCard } from "@/components/dashboard/stats-card"
 import { JournalCard } from "@/components/journal/journal-card"
@@ -16,6 +26,15 @@ interface RecentEntry {
   title: string
   entry_date: string
   mood: string | null
+  tags: string[] | null
+  body: string
+  word_count: number
+}
+
+function buildSnippet(body: string, maxChars = 140): string {
+  const collapsed = body.replace(/\s+/g, " ").trim()
+  if (collapsed.length <= maxChars) return collapsed
+  return collapsed.slice(0, maxChars).trimEnd() + "…"
 }
 
 export default async function DashboardPage() {
@@ -35,7 +54,7 @@ export default async function DashboardPage() {
       .single(),
     supabase
       .from("journal_entries")
-      .select("id, title, entry_date, mood")
+      .select("id, title, entry_date, mood, tags, body, word_count")
       .eq("user_id", user.id)
       .order("entry_date", { ascending: false })
       .order("created_at", { ascending: false })
@@ -62,9 +81,10 @@ export default async function DashboardPage() {
           <p>Could not load your dashboard.</p>
           <a
             href="/dashboard"
-            className="mt-2 inline-block text-sm font-medium text-red-700 hover:underline"
+            className="mt-2 inline-flex items-center gap-1 text-sm font-medium text-red-700 hover:underline"
           >
-            ↻ Try again
+            <RotateCcw className="h-4 w-4" aria-hidden />
+            Try again
           </a>
         </div>
       </>
@@ -83,17 +103,16 @@ export default async function DashboardPage() {
       <div className="mb-8">
         <h1 className="text-3xl font-bold text-gray-900">{greeting}</h1>
         {!isFirstTime && (
-          <p className="mt-1 text-base text-gray-700">
-            Keep up your great work 🌱
+          <p className="mt-1 inline-flex items-center gap-1 text-base text-gray-700">
+            Keep up your great work
+            <Sprout className="h-4 w-4 text-green-600" aria-hidden />
           </p>
         )}
       </div>
 
       {isFirstTime ? (
         <div className="rounded-xl border border-gray-200 bg-white px-6 py-16 text-center shadow-sm">
-          <div className="text-4xl" aria-hidden>
-            📓
-          </div>
+          <NotebookPen className="mx-auto h-12 w-12 text-green-600" aria-hidden />
           <h2 className="mt-4 text-2xl font-semibold text-gray-900">
             Welcome to AI English Journal
           </h2>
@@ -105,20 +124,31 @@ export default async function DashboardPage() {
               asChild
               className="bg-green-600 text-white hover:bg-green-700"
             >
-              <Link href="/journal/new">✏ Write Your First Entry</Link>
+              <Link href="/journal/new">
+                <Pencil className="h-4 w-4" aria-hidden />
+                Write Your First Entry
+              </Link>
             </Button>
           </div>
         </div>
       ) : (
         <>
           <section className="grid grid-cols-1 gap-4 md:grid-cols-3">
-            <StatsCard icon="🔥" value={currentStreak} label="Day streak" />
             <StatsCard
-              icon="✍"
+              icon={<Flame className="mx-auto h-7 w-7 text-green-600" />}
+              value={currentStreak}
+              label="Day streak"
+            />
+            <StatsCard
+              icon={<PenLine className="mx-auto h-7 w-7 text-green-600" />}
               value={totalWords.toLocaleString()}
               label="words"
             />
-            <StatsCard icon="📓" value={totalEntries} label="entries" />
+            <StatsCard
+              icon={<NotebookText className="mx-auto h-7 w-7 text-green-600" />}
+              value={totalEntries}
+              label="entries"
+            />
           </section>
 
           <div className="mt-8">
@@ -126,7 +156,10 @@ export default async function DashboardPage() {
               asChild
               className="w-full bg-green-600 text-white hover:bg-green-700 md:w-auto"
             >
-              <Link href="/journal/new">✏ Write Today&apos;s Entry</Link>
+              <Link href="/journal/new">
+                <Pencil className="h-4 w-4" aria-hidden />
+                Write Today&apos;s Entry
+              </Link>
             </Button>
           </div>
 
@@ -142,8 +175,9 @@ export default async function DashboardPage() {
                   title={entry.title}
                   entry_date={entry.entry_date}
                   mood={entry.mood}
-                  tags={[]}
-                  word_count={0}
+                  tags={entry.tags ?? []}
+                  word_count={entry.word_count}
+                  snippet={buildSnippet(entry.body)}
                   variant="compact"
                 />
               ))}
@@ -151,9 +185,10 @@ export default async function DashboardPage() {
             <div className="mt-4">
               <Link
                 href="/journal"
-                className="text-sm font-medium text-green-600 hover:underline"
+                className="inline-flex items-center gap-1 text-sm font-medium text-green-600 hover:underline"
               >
-                View all entries →
+                View all entries
+                <ArrowRight className="h-4 w-4" aria-hidden />
               </Link>
             </div>
           </section>

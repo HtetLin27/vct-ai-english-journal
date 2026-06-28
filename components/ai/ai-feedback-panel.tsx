@@ -2,18 +2,22 @@
 
 import Link from "next/link"
 import { useState } from "react"
+import { ArrowRight, RotateCcw, Sparkles } from "lucide-react"
 import { Button } from "@/components/ui/button"
-import { CorrectionCard } from "@/components/ai/correction-card"
+import {
+  CorrectionCard,
+  type ApplyResult,
+} from "@/components/ai/correction-card"
 import { SuggestionCard, type SaveResult } from "@/components/ai/suggestion-card"
 
-interface Correction {
+export interface Correction {
   original: string
   corrected: string
   explanation: string
   explanation_my?: string
 }
 
-interface Suggestion {
+export interface Suggestion {
   type: "vocabulary" | "expression"
   original: string
   suggestion: string
@@ -34,48 +38,22 @@ type PanelError =
   | { kind: "generic"; message: string }
 
 interface Props {
-  entryId: string
+  // Body sent to POST /api/ai/feedback — `{ entry_id }` for a saved entry or
+  // `{ body }` for an unsaved draft. Evaluated lazily so draft mode always
+  // sends the latest text.
+  requestPayload: () => Record<string, unknown>
+  onApplyCorrection: (correction: Correction) => Promise<ApplyResult>
+  onSaveWord: (suggestion: Suggestion) => Promise<SaveResult>
 }
 
-export function AiFeedbackPanel({ entryId }: Props) {
+export function AiFeedbackPanel({
+  requestPayload,
+  onApplyCorrection,
+  onSaveWord,
+}: Props) {
   const [loading, setLoading] = useState(false)
   const [feedback, setFeedback] = useState<Feedback | null>(null)
   const [error, setError] = useState<PanelError | null>(null)
-
-  async function handleSaveWord(suggestion: Suggestion): Promise<SaveResult> {
-    try {
-      const res = await fetch("/api/vocabulary", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          word: suggestion.suggestion,
-          definition: suggestion.definition,
-          // Forward only when the suggestion carries it — older feedback rows
-          // (and any future suggestion source without a Myanmar definition)
-          // simply omit the field, matching the optional API contract.
-          ...(suggestion.definition_my
-            ? { definition_my: suggestion.definition_my }
-            : {}),
-          example_sentence: suggestion.example_sentence,
-          source_entry_id: entryId,
-        }),
-      })
-
-      if (res.ok) return "saved"
-
-      // Treat the unique-constraint duplicate as success: the user's intent
-      // (word in vocabulary book) is already satisfied.
-      if (res.status === 400) {
-        const json = await res.json().catch(() => null)
-        if (json?.error === "This word is already in your vocabulary book") {
-          return "saved"
-        }
-      }
-      return "error"
-    } catch {
-      return "error"
-    }
-  }
 
   async function requestFeedback() {
     setLoading(true)
@@ -84,7 +62,7 @@ export function AiFeedbackPanel({ entryId }: Props) {
       const res = await fetch("/api/ai/feedback", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ entry_id: entryId }),
+        body: JSON.stringify(requestPayload()),
       })
       const json = await res.json().catch(() => null)
 
@@ -126,7 +104,10 @@ export function AiFeedbackPanel({ entryId }: Props) {
         </p>
         <div className="mt-3">
           <Button asChild variant="outline" size="sm">
-            <Link href="/settings">Settings →</Link>
+            <Link href="/settings">
+              Settings
+              <ArrowRight className="h-4 w-4" aria-hidden />
+            </Link>
           </Button>
         </div>
       </section>
@@ -146,7 +127,8 @@ export function AiFeedbackPanel({ entryId }: Props) {
             disabled={loading}
             className="bg-green-600 text-white hover:bg-green-700"
           >
-            ↻ Try again
+            <RotateCcw className="h-4 w-4" aria-hidden />
+            Try again
           </Button>
         </div>
       </section>
@@ -211,6 +193,7 @@ export function AiFeedbackPanel({ entryId }: Props) {
                     corrected={c.corrected}
                     explanation={c.explanation}
                     explanationMy={c.explanation_my}
+                    onApply={() => onApplyCorrection(c)}
                   />
                 ))}
               </div>
@@ -238,7 +221,7 @@ export function AiFeedbackPanel({ entryId }: Props) {
                   reasonMy={s.reason_my}
                   definition={s.definition}
                   example_sentence={s.example_sentence}
-                  onSave={() => handleSaveWord(s)}
+                  onSave={() => onSaveWord(s)}
                 />
               ))}
             </div>
@@ -252,7 +235,8 @@ export function AiFeedbackPanel({ entryId }: Props) {
             variant="outline"
             size="sm"
           >
-            ↻ Refresh feedback
+            <RotateCcw className="h-4 w-4" aria-hidden />
+            Refresh feedback
           </Button>
         </div>
       </section>
@@ -269,7 +253,8 @@ export function AiFeedbackPanel({ entryId }: Props) {
           onClick={requestFeedback}
           className="bg-green-600 text-white hover:bg-green-700"
         >
-          ✨ Check my English
+          <Sparkles className="h-4 w-4" aria-hidden />
+          Check my English
         </Button>
       </div>
       <p className="mt-2 text-sm text-gray-700">

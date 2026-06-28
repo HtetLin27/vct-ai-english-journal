@@ -1,6 +1,7 @@
 "use client"
 
 import { useState } from "react"
+import { Sparkles } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 
@@ -226,7 +227,8 @@ export function GuidedQuestions({ onDraftReady }: Props) {
             onClick={() => fetchDraft(step.questions, step.answers)}
             className="bg-green-600 text-white hover:bg-green-700"
           >
-            ✨ Create my draft
+            <Sparkles className="h-4 w-4" aria-hidden />
+            Create my draft
           </Button>
           <Button type="button" variant="outline" onClick={reset}>
             Cancel

@@ -172,13 +172,34 @@ export async function POST(request: NextRequest) {
   }
   const payload = parsedBody as Record<string, unknown>
 
-  if (payload.entry_id === undefined || payload.entry_id === null || payload.entry_id === "") {
-    return jsonValidation("entry_id is required")
+  // Two modes: feedback on a saved entry (`entry_id`, persisted to ai_feedback)
+  // or on an unsaved draft (`body`, returned without persisting since there's
+  // no entry to attach it to). entry_id wins when both are present.
+  const hasEntryId =
+    payload.entry_id !== undefined &&
+    payload.entry_id !== null &&
+    payload.entry_id !== ""
+  const hasDraftBody =
+    typeof payload.body === "string" && payload.body.trim() !== ""
+
+  if (!hasEntryId && !hasDraftBody) {
+    return jsonValidation("entry_id or body is required")
   }
-  if (typeof payload.entry_id !== "string" || !UUID_PATTERN.test(payload.entry_id)) {
-    return jsonValidation("entry_id must be a valid UUID")
+
+  let entryId: string | null = null
+  if (hasEntryId) {
+    if (
+      typeof payload.entry_id !== "string" ||
+      !UUID_PATTERN.test(payload.entry_id)
+    ) {
+      return jsonValidation("entry_id must be a valid UUID")
+    }
+    entryId = payload.entry_id
+  } else {
+    if (typeof payload.body !== "string" || payload.body.length > 10000) {
+      return jsonValidation("body must be a string of at most 10000 characters")
+    }
   }
-  const entryId = payload.entry_id
 
   const { data: profile, error: profileError } = await supabase
     .from("profiles")
@@ -194,16 +215,22 @@ export async function POST(request: NextRequest) {
     )
   }
 
-  const { data: entry, error: entryError } = await supabase
-    .from("journal_entries")
-    .select("id, body")
-    .eq("id", entryId)
-    .eq("user_id", user.id)
-    .single()
+  let sourceText: string
+  if (entryId) {
+    const { data: entry, error: entryError } = await supabase
+      .from("journal_entries")
+      .select("id, body")
+      .eq("id", entryId)
+      .eq("user_id", user.id)
+      .single()
 
-  if (entryError || !entry) return jsonNotFound("Entry not found")
+    if (entryError || !entry) return jsonNotFound("Entry not found")
+    sourceText = entry.body
+  } else {
+    sourceText = payload.body as string
+  }
 
-  const truncatedBody = entry.body.slice(0, MAX_BODY_CHARS)
+  const truncatedBody = sourceText.slice(0, MAX_BODY_CHARS)
   const prompt = buildFeedbackPrompt(truncatedBody)
 
   let geminiText: string
@@ -227,6 +254,13 @@ export async function POST(request: NextRequest) {
       sample: geminiText.slice(0, 500),
     })
     return jsonError("AI service unavailable. Please try again later.", 502)
+  }
+
+  // Draft mode has no entry to attach feedback to — return it without
+  // persisting. The shape (corrections + suggestions) matches what the panel
+  // reads from `data`.
+  if (!entryId) {
+    return jsonSuccess(feedback)
   }
 
   const { data: inserted, error: insertError } = await supabase

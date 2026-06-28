@@ -1,6 +1,7 @@
 "use client"
 
 import Link from "next/link"
+import { ArrowLeft } from "lucide-react"
 import { useRouter } from "next/navigation"
 import {
   EntryForm,
@@ -35,9 +36,10 @@ export default function NewEntryPage() {
       <div className="mb-2">
         <Link
           href="/journal"
-          className="text-sm text-gray-500 hover:text-gray-900"
+          className="inline-flex items-center gap-1 text-sm text-gray-500 hover:text-gray-900"
         >
-          ← Back
+          <ArrowLeft className="h-4 w-4" aria-hidden />
+          Back
         </Link>
       </div>
       <h1 className="mb-6 text-3xl font-bold text-gray-900">
@@ -57,6 +59,8 @@ export default function NewEntryPage() {
         cancelHref="/journal"
         onSubmit={handleCreate}
         showGuidedQuestions
+        draftKey="new"
+        enableDraftFeedback
       />
     </>
   )

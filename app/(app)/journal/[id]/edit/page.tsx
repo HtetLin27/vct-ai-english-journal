@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react"
 import Link from "next/link"
+import { ArrowLeft } from "lucide-react"
 import { useParams, useRouter } from "next/navigation"
 import {
   EntryForm,
@@ -102,9 +103,10 @@ export default function EditEntryPage() {
       <div className="mb-2">
         <Link
           href={`/journal/${entryId}`}
-          className="text-sm text-gray-500 hover:text-gray-900"
+          className="inline-flex items-center gap-1 text-sm text-gray-500 hover:text-gray-900"
         >
-          ← Back
+          <ArrowLeft className="h-4 w-4" aria-hidden />
+          Back
         </Link>
       </div>
       <h1 className="mb-6 text-3xl font-bold text-gray-900">Edit Entry</h1>
@@ -118,9 +120,10 @@ export default function EditEntryPage() {
           </p>
           <Link
             href="/journal"
-            className="text-sm font-medium text-green-600 hover:underline"
+            className="inline-flex items-center gap-1 text-sm font-medium text-green-600 hover:underline"
           >
-            ← Back to My Journal
+            <ArrowLeft className="h-4 w-4" aria-hidden />
+            Back to My Journal
           </Link>
         </div>
       )}
@@ -132,6 +135,8 @@ export default function EditEntryPage() {
           submittingLabel="Saving…"
           cancelHref={`/journal/${entryId}`}
           onSubmit={handleUpdate}
+          draftKey={entryId}
+          enableDraftFeedback
         />
       )}
     </>

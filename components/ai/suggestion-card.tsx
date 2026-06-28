@@ -1,6 +1,7 @@
 "use client"
 
 import { useState } from "react"
+import { Check, Plus } from "lucide-react"
 import { Button } from "@/components/ui/button"
 
 export type SaveResult = "saved" | "error"
@@ -66,7 +67,8 @@ export function SuggestionCard({
               disabled
               className="bg-green-100 text-green-800 hover:bg-green-100 disabled:opacity-100"
             >
-              ✓ Saved
+              <Check className="h-4 w-4" aria-hidden />
+              Saved
             </Button>
           ) : saveState === "saving" ? (
             <Button variant="outline" size="sm" disabled>
@@ -74,7 +76,8 @@ export function SuggestionCard({
             </Button>
           ) : (
             <Button variant="outline" size="sm" onClick={handleClick}>
-              + Save &ldquo;{suggestion}&rdquo;
+              <Plus className="h-4 w-4" aria-hidden />
+              Save &ldquo;{suggestion}&rdquo;
             </Button>
           )}
           {saveState === "error" && (

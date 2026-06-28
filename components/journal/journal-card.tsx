@@ -1,4 +1,5 @@
 import Link from "next/link"
+import { ArrowRight } from "lucide-react"
 
 const MOOD_META: Record<string, { emoji: string; label: string }> = {
   happy: { emoji: "😊", label: "happy" },
@@ -36,6 +37,8 @@ interface Props {
   tags: string[]
   word_count: number
   variant?: "full" | "compact"
+  // Short preview of the entry body, shown in the compact variant.
+  snippet?: string
 }
 
 export function JournalCard({
@@ -46,6 +49,7 @@ export function JournalCard({
   tags,
   word_count,
   variant = "full",
+  snippet,
 }: Props) {
   const moodMeta = mood ? MOOD_META[mood] ?? null : null
 
@@ -84,17 +88,38 @@ export function JournalCard({
               {word_count} {word_count === 1 ? "word" : "words"}
             </span>
           </div>
-          <span aria-hidden className="shrink-0 text-gray-400">
-            →
-          </span>
+          <ArrowRight
+            aria-hidden
+            className="h-4 w-4 shrink-0 text-gray-400"
+          />
         </div>
       )}
 
-      {variant === "compact" && moodMeta && (
-        <div className="mt-2 inline-flex items-center gap-1 text-sm text-gray-600">
-          <span aria-hidden>{moodMeta.emoji}</span>
-          <span>{moodMeta.label}</span>
-        </div>
+      {variant === "compact" && (
+        <>
+          {snippet && (
+            <p className="mt-1 line-clamp-2 text-sm text-gray-600">{snippet}</p>
+          )}
+          <div className="mt-2 flex flex-wrap items-center gap-x-2 gap-y-1 text-sm text-gray-600">
+            {moodMeta && (
+              <span className="inline-flex items-center gap-1">
+                <span aria-hidden>{moodMeta.emoji}</span>
+                <span>{moodMeta.label}</span>
+              </span>
+            )}
+            <span className="text-xs text-gray-500">
+              {word_count} {word_count === 1 ? "word" : "words"}
+            </span>
+            {tags.slice(0, 2).map((tag) => (
+              <span
+                key={tag}
+                className="rounded-full bg-green-100 px-2 py-0.5 text-xs text-green-800"
+              >
+                {tag}
+              </span>
+            ))}
+          </div>
+        </>
       )}
     </Link>
   )

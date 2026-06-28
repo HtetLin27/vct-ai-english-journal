@@ -1,5 +1,6 @@
 "use client"
 
+import { RotateCcw } from "lucide-react"
 import { Button } from "@/components/ui/button"
 
 interface Props {
@@ -24,7 +25,8 @@ export default function AppError({ reset }: Props) {
           onClick={reset}
           className="bg-green-600 text-white hover:bg-green-700"
         >
-          ↻ Try again
+          <RotateCcw className="h-4 w-4" aria-hidden />
+          Try again
         </Button>
       </div>
     </div>

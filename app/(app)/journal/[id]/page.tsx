@@ -1,8 +1,9 @@
 import Link from "next/link"
+import { ArrowLeft, Pencil, RotateCcw } from "lucide-react"
 import { createServerClient } from "@/lib/supabase/server"
 import { Button } from "@/components/ui/button"
 import { DeleteEntryButton } from "@/components/journal/delete-entry-button"
-import { AiFeedbackPanel } from "@/components/ai/ai-feedback-panel"
+import { EntryFeedback } from "@/components/ai/entry-feedback"
 
 const MOOD_META: Record<string, { emoji: string; label: string }> = {
   happy: { emoji: "😊", label: "happy" },
@@ -83,9 +84,10 @@ export default async function ViewEntryPage({ params }: PageProps) {
         <p>Could not load this entry.</p>
         <a
           href={`/journal/${params.id}`}
-          className="mt-2 inline-block text-sm font-medium text-red-700 hover:underline"
+          className="mt-2 inline-flex items-center gap-1 text-sm font-medium text-red-700 hover:underline"
         >
-          ↻ Try again
+          <RotateCcw className="h-4 w-4" aria-hidden />
+          Try again
         </a>
       </div>
     )
@@ -99,9 +101,10 @@ export default async function ViewEntryPage({ params }: PageProps) {
         </p>
         <Link
           href="/journal"
-          className="text-sm font-medium text-green-600 hover:underline"
+          className="inline-flex items-center gap-1 text-sm font-medium text-green-600 hover:underline"
         >
-          ← Back to My Journal
+          <ArrowLeft className="h-4 w-4" aria-hidden />
+          Back to My Journal
         </Link>
       </div>
     )
@@ -115,9 +118,10 @@ export default async function ViewEntryPage({ params }: PageProps) {
       <div className="mb-2">
         <Link
           href="/journal"
-          className="text-sm font-medium text-green-600 hover:underline"
+          className="inline-flex items-center gap-1 text-sm font-medium text-green-600 hover:underline"
         >
-          ← My Journal
+          <ArrowLeft className="h-4 w-4" aria-hidden />
+          My Journal
         </Link>
       </div>
 
@@ -163,12 +167,15 @@ export default async function ViewEntryPage({ params }: PageProps) {
 
       <div className="flex flex-wrap gap-3">
         <Button asChild variant="outline">
-          <Link href={`/journal/${entry.id}/edit`}>✏ Edit</Link>
+          <Link href={`/journal/${entry.id}/edit`}>
+            <Pencil className="h-4 w-4" aria-hidden />
+            Edit
+          </Link>
         </Button>
         <DeleteEntryButton entryId={entry.id} />
       </div>
 
-      <AiFeedbackPanel entryId={entry.id} />
+      <EntryFeedback entryId={entry.id} entryBody={entry.body} />
     </>
   )
 }

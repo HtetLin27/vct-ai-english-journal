@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useState } from "react"
 import Link from "next/link"
+import { Pencil } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { JournalCard } from "@/components/journal/journal-card"
 import { SearchBar } from "@/components/journal/search-bar"
@@ -76,7 +77,10 @@ export default function JournalListPage() {
       <div className="mb-6 flex items-center justify-between gap-4">
         <h1 className="text-3xl font-bold text-gray-900">My Journal</h1>
         <Button asChild className="bg-green-600 text-white hover:bg-green-700">
-          <Link href="/journal/new">✏ New Entry</Link>
+          <Link href="/journal/new">
+            <Pencil className="h-4 w-4" aria-hidden />
+            New Entry
+          </Link>
         </Button>
       </div>
 
